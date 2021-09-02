@@ -1,0 +1,22 @@
+import React from "react"
+
+
+export {Discovery} from "./discovery_icon"
+export {Favorite} from "./favorites_icon"
+export {Football } from "./football_icon"
+export {HeartHalfFilled} from "./heart_filled_half_icon"
+export {NewsPaper} from "./newpaper_icon"
+export {Next} from "./next_icon"
+export {PaintBrush} from "./paint_brush_icon"
+export {Pause} from "./pause_icon"
+export {PersonAtCounter} from "./person_at_counter_icon"
+export {Play} from "./play_icon"
+export {Previous} from "./previous_icon"
+export {Settings} from "./settings_icon"
+export {Sound} from "./sound_icon"
+export {Clock} from "./clock_icon"
+export {RightArrow} from "./right_arrow_icon"
+export {LeftArrow} from "./Left_arrow_icon"
+export {Search} from "./search_icon"
+export {PlayFilled} from "./play_filled_icon"
+

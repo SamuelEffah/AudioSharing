@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root{
+    font-size: 14px;
+    --color-background: #121213;
+    --color-hover: #1F1F20;
+    --color-text: #EBEBEB;
+    --color-text-200: #E7E5E5;
+    --color-text-300: #C4C4C4;
+    --color-primary-100: #18191C;
+    --color-primary-200: #212326;
+    --color-white: #ffffff;
+    --color-primary-300: #dddddd;
+    --color-accent: #DB0202;
+    --color-accent-200: #BF614C;
+    --color-player:#EBEBEB;
+    --color-black: #000;
+    
+  
+}
+
+
+
+
+/* for firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-200) rgba(0, 0, 0, 0);
+  }
+  
+  /* for non-firefox */
+  ::-webkit-scrollbar {
+    overflow: overlay;
+    width: 8px;
+    /* shouldnt hardcode width, pls find way to make it dynamic, thin wasn't working for me...*/
+  }
+  
+  ::-webkit-scrollbar-track {
+    display: initial;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary-200);
+    border-radius: 5px;
+  }
+/* 
+  #nprogress {
+    position: relative;
+    z-index: 9999999;
+  }
+  
+  #nprogress .bar {
+    background: var(--color-accent-hover) !important;
+  }
+  
+  #nprogress .peg {
+    box-shadow: 0 0 10px var(--color-accent-hover),
+      0 0 5px var(--color-accent-hover) !important;
+  } */
+
+html,
+body,
+#__next {
+  background-color: var(--color-background);
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+html {
+    position: fixed;
+}
+  
+  #__next {
+    overflow-y: auto;
+}
+
+
+
+#middlePanel{
+  margin-left: 300px;
+  width: calc(100% - 750px);
+  
+}
