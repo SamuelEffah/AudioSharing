@@ -2,19 +2,21 @@ import React from "react";
 import Avatar from "./avatar";
 import Button from "./button";
 
+//mock data
+import Users from "../data/users";
 
 const FollowItem = ({user,...props}) =>{
     return(
-        <div className="flex items-center my-3 justify-between h-14 w-full relative">
+        <div className="flex items-center my-3 justify-between h-16 w-full relative">
             <div className="flex items-center pl-6">
                 <div>
-                    <Avatar width={40} height={40}/>
+                    <Avatar url={user.profile_url} width={50} height={50}/>
                 </div>
                 <div className="pl-3">
-                    <p>Violet Effah</p>
-                    <small 
+                    <p>{user.full_name}</p>
+                    <small className="text-sm"
                       style={{color: '#808080'}}
-                    >@violetEffah</small>
+                    >@{user.username}</small>
                 </div>
             </div>
             <Button
@@ -45,10 +47,10 @@ const PeopleToFollow = ({ className, ...props }) => {
         </small>
       </div>
       <div className="w-full relative">
-          <FollowItem/>
-          <FollowItem/>
-          <FollowItem/>
-          <FollowItem/>
+      {Users.sort(() => 0.5 - Math.random()).slice(0,3).map((u)=>{
+            return <FollowItem key={u.id} user={u}/>
+        })}
+        
       </div>
     </div>
   );

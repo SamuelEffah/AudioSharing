@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { RightArrow, LeftArrow } from ".././icons";
 import { motion } from "framer-motion";
 
@@ -9,6 +9,7 @@ const ScrollBtn = ({ onClick, className, icon, direction, ...props }) => {
   return (
     <button
       onClick={onClick}
+      style={{color:"#000"}}
       className={`z-50 absolute bg-primary-700 shadow-lg  flex items-center justify-center
          w-12 h-12 rounded-full ${directionClass} ${className}`}
       {...props}
@@ -18,36 +19,44 @@ const ScrollBtn = ({ onClick, className, icon, direction, ...props }) => {
   );
 };
 
-const getPanelWidth = () => {
-  if (typeof window !== "undefined") {
-    return document.getElementById("middlePanel").clientWidth;
-  }
-};
+// const getPanelWidth = () => {
+//   if (typeof window !== "undefined") {
+//     return document.getElementById("middlePanel").clientWidth;
+//   }
+// };
 
 const HorizontalScroll = ({ children, offset = 0, itemSize, ...props }) => {
+  
+  
+  const ref = useRef(null)
   const itemsLength = children ? children.length : 0;
   const itemWidth = itemSize + offset;
-  const [panelWidth, setPanelWidth] = useState(getPanelWidth());
-  const maxChildrenVisible = panelWidth / itemWidth;
+  const [panelWidth, setPanelWidth]  = useState(0);
+  // const maxChildrenVisible = panelWidth / itemWidth;
   const maxWidth = itemsLength * itemWidth;
+  const [maxChildrenVisible, setMaxChildrenVisible] =useState(0)
   const [currentAction, setCurrentAction] = useState(null);
   const [position, setPosition] = useState(0);
   const [translate, setTranslate] = useState(0);
   const [isDisableLeft, setIsDisableLeft] = useState(
-    !(itemsLength > Math.ceil(maxChildrenVisible))
+    null
   );
   const [isDisableRight, setIsDisableRight] = useState(true);
 
-  useEffect(() => {
-    const getWidth = () => {
-      setPanelWidth(getPanelWidth());
-    };
 
-    window.addEventListener("resize", getWidth);
-    return () => {
-      window.removeEventListener("resize", getWidth);
-    };
-  }, []);
+  useEffect( () => {
+    if(ref.current){
+      let maxChildren = ref.current.offsetWidth / itemWidth
+        setIsDisableLeft(!(itemsLength > Math.ceil(maxChildren)))
+        setPanelWidth(ref.current.offsetWidth)
+        setMaxChildrenVisible(maxChildren)
+    }
+ 
+}, [ref,itemSize,itemWidth,itemsLength]);
+
+
+
+
 
   useEffect(() => {
     let r = maxChildrenVisible % 1;
@@ -91,8 +100,9 @@ const HorizontalScroll = ({ children, offset = 0, itemSize, ...props }) => {
 
   }, [translate, currentAction, position]);
 
+  
   return (
-    <div className="w-full overflow-x-hidden relative flex items-center">
+    <div ref={ref} className="w-full overflow-x-hidden relative flex items-center">
       {isDisableLeft ? null : (
         <ScrollBtn
           direction="left"

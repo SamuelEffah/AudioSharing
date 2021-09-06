@@ -1,12 +1,22 @@
 import React from "react"
+import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize"
 
 
 
 const RightPanel = ({children,...props}) =>{
 
+    const screenSize = useDetectScreenSize()
+    let rightPanelWidth = 450
+    if(screenSize === "big-screen"){
+        rightPanelWidth = 450 
+    }
+    if(screenSize === "desktop"){
+        rightPanelWidth = 350
+    }
+
     return(
         <div
-        style={{width:'450px'}}
+        style={{width:rightPanelWidth +'px'}}
         id="rightPanel"
         className="z-50 
         flex flex-col items-center

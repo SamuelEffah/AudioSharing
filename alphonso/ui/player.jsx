@@ -2,12 +2,14 @@ import React, {useCallback, useEffect, useState} from "react"
 import { Next, Pause, Play, PlayFilled, Previous } from "../icons"
 import Avatar from "./avatar"
 
+//mock data 
+import Podcasts from "../data/podcasts"
 
 const PlayerBtn = ({onClick,className,icon,...props})=>{
 
     return (
         <button
-        className={`w-12 h-12 rounded-full flex items-center justify-center ${className}`}
+        className={`w-12 h-12 mx-4 flex-shrink-0 rounded-full flex items-center justify-center ${className}`}
         onClick={onClick}
         {...props}
         >
@@ -34,16 +36,16 @@ const Player = ({className,...props}) =>{
             </div>
             <div className="flex flex-col relative items-center pt-4">
                 <div className="flex w-full">
-                        <Avatar width={60} height={60}/>
+                        <Avatar url={Podcasts[0].poster} width={60} height={60}/>
                         <div className="pl-3">
                         <p 
                         className="text-xl font-bold "
-                        >Made in Canada</p>
-                       <small className="text-base">Nicholas Scholes</small> 
+                        >{Podcasts[0].name}</p>
+                       <small className="text-base">{Podcasts[0].creator}</small> 
                         </div>
                    
                 </div>
-                    <div className="mt-6  flex items-center justify-between w-6/12">
+                    <div className="mt-6  flex items-center justify-center w-full">
                         <PlayerBtn
                             icon={<Previous width={22} height={22}/>}
                         />

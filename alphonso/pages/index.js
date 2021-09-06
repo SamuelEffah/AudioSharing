@@ -1,4 +1,6 @@
-import Home from "../modules/dashboard/home";
+
+import Login from "../modules/auth/login";
+
+export default Login;
 
 
-export default Home;

@@ -1,11 +1,14 @@
 import React from "react"
-
+import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize"
+import Link from "next/link"
 
 const CategoryCard = ({to,icon,label, className,marginX=0, onClick, ...props}) =>{
-
+    const screenSize = useDetectScreenSize()
     return(
+        <Link href={to}>
+            <a>
         <div
-        style={{width: '210px', marginLeft: marginX}} 
+        style={{width: screenSize === "mobile"? "180px" : '210px', marginLeft: marginX}} 
         className="bg-primary-100
         cursor-pointer
          rounded-lg flex h-32 items-center justify-center flex-col">
@@ -18,6 +21,9 @@ const CategoryCard = ({to,icon,label, className,marginX=0, onClick, ...props}) =
             className="mt-3"
             >{label}</p>
         </div>
+                
+            </a>
+        </Link>
     )
 }
 

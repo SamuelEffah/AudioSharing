@@ -1,34 +1,38 @@
 import React from "react"
 import Avatar from "./avatar"
-
+import Link from "next/link"
 
 const TopHostCard = ({user,marginX=0,...props})=>{
 
     return (
+        <Link href={`/users/${user.username}`}>
+            <a>
         <div 
-        style={{width: "100px",height:"170px", marginLeft: marginX}}
+        style={{width: "100px", marginLeft: marginX}}
         className="flex flex-col  relative items-center">
             <div
             className="h-24  w-full"
             style={{height:"110px"}}
             >
             <Avatar
+            url={user.profile_url}
             width={100}
             height={110}
             />
-        
             </div>
             <div 
             className="pt-2.5"
-            style={{height:"60px"}}
+           
             >
-                <p className="text-base font-medium">Jacob Kim</p>
+                <p className="text-base font-medium">{user.full_name}</p>
                 <small
                 style={{color: '#808080'}}
                 className="text-sm"
-                >122 episodes</small>
+                >{user.episodes} episodes</small>
             </div>
         </div>
+            </a>
+        </Link>
     )
 }
 

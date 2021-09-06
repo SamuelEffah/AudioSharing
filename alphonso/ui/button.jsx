@@ -16,7 +16,7 @@ import React from "react"
         onClick = {onClick} 
         {...props}
         >
-            {icon ? (<span>{icon}</span>) : null}
+            {icon ? icon : null}
             <span className="text-lg font-semibold">
             {label}
             </span>

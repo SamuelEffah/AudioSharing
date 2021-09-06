@@ -13,7 +13,11 @@
     "moment": "^2.29.1",
     "next": "11.1.0",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "react-modal": "^3.14.3",
+    "react-query": "^3.21.1",
+    "react-responsive": "^9.0.0-beta.4",
+    "zustand": "^3.5.10"
   },
   "devDependencies": {
     "autoprefixer": "^10.3.2",

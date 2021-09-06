@@ -1,9 +1,10 @@
 import React from "react"
+import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize"
 import Button from "./button"
 
 
 const Banner = ({onClick, className, ...props}) =>{
-
+    const screenSize = useDetectScreenSize()
 
     return(
         <div 
@@ -12,7 +13,9 @@ const Banner = ({onClick, className, ...props}) =>{
         onClick={onClick}
         {...props}
         >
-            <div className="w-8/12 p-5 mt-2">    
+            <div className={`p-5 
+            ${screenSize === 'mobile' ? 'w-full' : 'w-8/12' }
+            `}>    
             <h2  
             className="text-2xl font-semibold
              "
@@ -30,6 +33,7 @@ const Banner = ({onClick, className, ...props}) =>{
                 label="Start Today"
 
             />
+
             
             </div>
         </div>
