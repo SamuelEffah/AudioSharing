@@ -6,10 +6,10 @@ import NavBarMobile from "../../ui/navbar_mobile";
 import { SearchModal } from "../../ui/search_modal";
 import SideBarPanel from "../../ui/side_bar_panel";
 import RightPanel from "../../ui/right_panel";
-import SearchBar from "../../ui/search_bar";
 import FollowersActivity from "../../ui/followers_activity_card";
 import PeopleToFollow from "../../ui/people_to_follow_card";
 import Player from "../../ui/player";
+import Search from "../../shared-components/search";
 
 const DesktopLayout = ({ children, className, ...props }) => {
   const screenSize = useDetectScreenSize();
@@ -23,7 +23,7 @@ const DesktopLayout = ({ children, className, ...props }) => {
         {children}
 
         <RightPanel>
-          <SearchBar />
+          <Search/>
           <FollowersActivity />
           <PeopleToFollow />
           <Player />
