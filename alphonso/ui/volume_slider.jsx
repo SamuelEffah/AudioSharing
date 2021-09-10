@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { VolumeHigh, VolumeMedium, VolumeMute } from "./../icons";
 import { motion, useMotionValue, useTransform } from "framer-motion";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 const variants = {
   visible: {
@@ -24,13 +26,7 @@ const item = {
   hidden: { opacity: 0 },
 };
 
-const VolumeSlider = ({
-  isMute = false,
-  volumeLevel = 50,
-  className,
-  ...props
-}) => {
- 
+const VolumeSlider = ({ isMute = false, className, ...props }) => {
   const [currentIcon, setCurrentIcon] = useState(
     isMute ? (
       <VolumeMute width={22} height={22} />
@@ -39,6 +35,7 @@ const VolumeSlider = ({
     )
   );
 
+  const [volumeLevel, setVolumeLevel] = useState(50);
   const [isAnimateHeight, setIsAnimateHeight] = useState(false);
 
   const [isVolumeBtn, setIsVolumeBtn] = useState(isMute ? isMute : false);
@@ -62,24 +59,31 @@ const VolumeSlider = ({
       flex-col items-center justify-end
         rounded-full "
     >
-     
       <motion.div
         variants={item}
         style={{ height: "100px" }}
-        className="w-1 flex flex-items  justify-end rounded-full relative bg-primary-300"
+        className="w-2 flex flex-items mb-2 rounded-full relative bg-transparent"
       >
         <motion.div
-    
           variants={item}
-          
-          style={{ height: volumeLevel + "px" }}
-          className="bg-accent absolute bottom-0 w-full flex items-center justify-center rounded-full"
+          className=" h-full  w-full flex items-center justify-end rounded-full"
         >
-          <motion.div
- 
-           style={{}} variants={item}
-          className="w-4 h-4 rounded-full bg-accent absolute top-0"
-          ></motion.div>
+          <Slider
+            reverse={true}
+            vertical={true}
+            min={0}
+            max={100}
+            value={volumeLevel}
+            railStyle={{ backgroundColor: "var(--color-accent)" }}
+            trackStyle={{ backgroundColor: "#BFBFBF" }}
+            handleStyle={{
+              backgroundColor: "var(--color-accent)",
+              border: "none",
+            }}
+            onChange={(v) => {
+              setVolumeLevel(v);
+            }}
+          />
         </motion.div>
       </motion.div>
       <button
