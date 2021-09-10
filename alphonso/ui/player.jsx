@@ -4,6 +4,7 @@ import Avatar from "./avatar"
 
 //mock data 
 import Podcasts from "../data/podcasts"
+import VolumeSlider from "./volume_slider"
 
 const PlayerBtn = ({onClick,className,icon,...props})=>{
 
@@ -28,12 +29,15 @@ const Player = ({className,...props}) =>{
 
         <div
         style={{color:'#000'}}
-         className="bg-primary-700 p-3 w-11/12 h-56 rounded-xl">
+         className="bg-primary-700 relative p-3 w-11/12 h-56 rounded-xl">
             <div>
                 <h4
                 className="text-md font-semibold"
                 >Current Playing</h4>
             </div>
+         
+            <VolumeSlider/>
+          
             <div className="flex flex-col relative items-center pt-4">
                 <div className="flex w-full">
                         <Avatar url={Podcasts[0].poster} width={60} height={60}/>
@@ -45,7 +49,7 @@ const Player = ({className,...props}) =>{
                         </div>
                    
                 </div>
-                    <div className="mt-6  flex items-center justify-center w-full">
+                    <div className="mt-6 flex items-center justify-center w-full">
                         <PlayerBtn
                             icon={<Previous width={22} height={22}/>}
                         />

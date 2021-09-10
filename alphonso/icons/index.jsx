@@ -24,5 +24,8 @@ export {Google} from "./google_icon"
 export {Github} from "./github_icon"
 export {Spinner} from "./spinner"
 export {Menu} from "./menu_icon"
+export {VolumeMute} from "./volume_mute_icon"
+export {VolumeHigh} from "./volume_high_icon"
+export {VolumeMedium} from "./volume_medium_icon"
 
 
