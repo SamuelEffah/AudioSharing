@@ -14,7 +14,7 @@ defmodule Hass.Repo.Migrations.AddUserTable do
       add :is_admin, :boolean, default: false
       add :profile_url, :string
       add :current_activity, :string
-      add :is_creator, :boolean, null: false
+      add :is_creator, :boolean, default: false
       add :ip, :string
       timestamps()
     end

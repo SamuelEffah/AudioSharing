@@ -15,6 +15,7 @@ defmodule Avocado.MixProject do
   def application do
     [
       extra_applications: [:logger, :ueberauth_github],
+      mod: {Avocado.Application, []}
     ]
   end
 
