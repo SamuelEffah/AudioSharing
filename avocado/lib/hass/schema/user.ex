@@ -3,7 +3,7 @@ defmodule Hass.Schema.User do
   import Ecto.Changeset
 
 
-  @derive Jason.Encoder
+  @derive {Jason.Encoder, only: [:id]}
   @timestamps_opts [type: :utc_datetime_usec]
 
   @type t :: %__MODULE__{

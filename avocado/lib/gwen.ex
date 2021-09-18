@@ -1,6 +1,7 @@
 defmodule Gwen do
 
   alias Gwen.Routes.User
+  alias Gwen.Routes.Auth.Github
   use Plug.Router
   alias Hass.Query.User, as: UserQuery
 
@@ -8,6 +9,7 @@ defmodule Gwen do
   plug(:dispatch)
 
   forward("/users", to: User)
+  forward("/auth/github", to: Github)
 
   get "/search/:query" do
     query =
