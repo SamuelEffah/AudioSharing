@@ -47,7 +47,7 @@ end
 
 
 defimpl Jason.Encoder, for: __MODULE__  do
-  @fields ~w(id name description subtitle poster_url creator_id)
+  @fields ~w(id name description subtitle poster_url creator_id)a
 
   defp transform(fields), do: fields
 

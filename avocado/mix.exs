@@ -30,6 +30,7 @@ defmodule Avocado.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:ueberauth, "~> 0.6"},
       {:ueberauth_github, "~> 0.7"},
+      {:ueberauth_google, "~> 0.10"},
       {:oauther, "~> 1.1"},
       {:jason, "~> 1.2"},
       {:joken, "~> 2.0"},
