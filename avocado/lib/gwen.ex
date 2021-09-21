@@ -2,6 +2,7 @@ defmodule Gwen do
 
   alias Gwen.Routes.User
   alias Gwen.Routes.Podcast
+  alias Gwen.Routes.Episode
   alias Gwen.Routes.Auth.Github
   alias Gwen.Routes.Auth.Google
   use Plug.Router
@@ -12,6 +13,7 @@ defmodule Gwen do
 
   forward("/users", to: User)
   forward("/podcast", to: Podcast)
+  forward("/episode", to: Episode)
   forward("/auth/github", to: Github)
   forward("/auth/google", to: Google)
 

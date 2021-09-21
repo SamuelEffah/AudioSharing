@@ -9,7 +9,7 @@ defmodule Hass.Schema.Episode do
 
 
   @primary_key {:id, :binary_id, autogenerate: true}
-  schema "podcast" do
+  schema "episodes" do
     field(:name, :string)
     field(:description, :string)
     field(:num_of_reports, :integer, default: 0)
@@ -24,15 +24,15 @@ defmodule Hass.Schema.Episode do
     timestamps()
   end
 
-  def changeset(podcast, params \\ %{}) do
-  podcast
+  def changeset(episode, params \\ %{}) do
+  episode
   |> cast(params, [
     :id,
     :name,
     :file_name,
     :media_type,
     :podcast_id,
-    :decription,
+    :description,
   ])
   |> validate_required([
     :name,
@@ -48,13 +48,13 @@ end
 
 
 defimpl Jason.Encoder, for: __MODULE__  do
-  @fields ~w(id name description file_name media_type num_of_listeners podcast_id)
+  @fields ~w(id name description file_name media_type num_of_listeners podcast_id)a
 
   defp transform(fields), do: fields
 
-  def encode(podcast, opts) do
+  def encode(episode, opts) do
 
-    podcast
+    episode
     |> Map.take(@fields)
     |> transform()
     |> Jason.Encoder.encode(opts)
