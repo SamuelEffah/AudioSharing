@@ -102,6 +102,19 @@ defmodule Hass.Query.User do
     |> Repo.all()
   end
 
+
+  def create_bot(bot) do
+    new_bot = %User{
+      fullname: bot["fullname"],
+      username: bot["username"],
+      profile_url: bot["profile_url"],
+      email: bot["email"]
+    }
+
+    changeset = User.changeset(new_bot)
+    Repo.insert!(changeset)
+  end
+
   def logout() do
   end
 end

@@ -2,7 +2,7 @@ defmodule Gwen.Routes.User do
   use Plug.Router
   alias Hass.Schema.User
   alias Hass.Query.User
-  alias Hass.Repo
+
 
   plug(Plug.Parsers,
     parsers: [:urlencoded, :json],
@@ -23,6 +23,19 @@ defmodule Gwen.Routes.User do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Jason.encode!(User.find_or_create_account(data)))
+  end
+
+
+  post "/bot" do
+    bots = conn.params["bots"]
+    IO.inspect bots
+    Enum.each(bots, fn bot ->
+      User.create_bot(bot)
+    end
+
+    )
+    # Repo.insert_all(User, bots)
+    send_resp(conn, 200, "Success!")
   end
 
 

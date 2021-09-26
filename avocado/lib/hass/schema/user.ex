@@ -78,7 +78,7 @@ defmodule Hass.Schema.User do
 
 
   defimpl Jason.Encoder, for: __MODULE__ do
-    @fields ~w(id fullname username email current_activity is_admin is_online
+    @fields ~w(id fullname username email profile_url current_activity is_admin is_online
     is_creator)a
 
 
