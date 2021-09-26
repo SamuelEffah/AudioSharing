@@ -7,26 +7,11 @@ import { Modal } from "../../ui/modal";
 import Tags from "../../ui/tags";
 import { InputField } from "../input_field";
 
-const useFormModal = create(
-  combine(
-    {
-      isOpen: true,
-    },
-    (set) => ({
-      close: () => set({ isOpen: false }),
-      set,
-    })
-  )
-);
-
-export const openUploadModal = () => {
-  useFormModal.getState().set({ isOpen: true });
-};
 
 const FormModal = ({ ...props }) => {
-  const { isOpen, close } = useFormModal();
+
   return (
-    <Modal isOpen={isOpen} onRequestClose={() => close()}>
+ 
       <div style={{ width: "600px", height: "700px" }} className="relative">
         <div 
         style={{backgroundColor:'#0D0D0F'}}
@@ -46,7 +31,7 @@ const FormModal = ({ ...props }) => {
 
         <div
           style={{ height: "90%" }}
-          className="w-full mt-10 overflow-y-auto relative"
+          className="w-full pt-10 overflow-y-auto relative"
         >
           <div className="flex relative mb-8">
             <div
@@ -87,7 +72,7 @@ const FormModal = ({ ...props }) => {
         >
           <p className="text-sm" style={{ color: "#844D4D" }}>Processing audio file....</p>
         </div>
-        <div className="fixed bottom-3 right-5">
+        <div className="fixed bottom-2 right-5">
             <Button
             
                 className="w-32"
@@ -95,7 +80,7 @@ const FormModal = ({ ...props }) => {
             />
         </div>
       </div>
-    </Modal>
+
   );
 };
 

@@ -1,8 +1,23 @@
-import React, {useRef, useState} from "react"
+import React, {useRef, useCallback,useState} from "react"
 import create from "zustand"
 import {combine} from "zustand/middleware"
-import { Plus } from "../../icons"
 import { Modal } from "../../ui/modal"
+import FormModal, { openFormModal } from "./form_modal"
+import { UploadFile } from "./upload_file"
+
+
+
+export const useModalStore = create(
+    combine(
+      {
+      currentState:0,
+      },
+      (set) => ({
+        setCurrentState: (state) => set({ currentState: state }),
+        set,
+      })
+    )
+  )
 
 const useUploadModalStore= create(
     combine(
@@ -17,52 +32,36 @@ const useUploadModalStore= create(
   )
 
 
-  export const openUploadModal = ()=>{
-    useUploadModalStore.getState().set({isOpen:true})
+  
+
+  export const openUploadModal = (action)=>{
+    useUploadModalStore.getState().set({isOpen:action})
 
   }
 
 
+
 const UploadModal = ({...props})=>{
+    const {currentState} = useModalStore()
     const {isOpen, close} = useUploadModalStore()
-    const fileInputRef = useRef(null)
 
-    const handleUpload = (e)=>{
-        fileInputRef.current.click()
-    }
 
-    const handleChange = (e) =>{
-        console.log("open file upload")
+    const renderState = (currentState)=>{
+      
+      if(currentState == 0 ){
+        return <UploadFile />
+      }
+      if(currentState == 1){
+        return <FormModal/>
+      }
     }
     return (
 
-        <Modal isOpen={isOpen} onRequestClose={()=>close()}
-        
+        <Modal
+     
+         isOpen={isOpen} onRequestClose={()=>close()} 
         >
-    <div style={{width:'400px', height:'450px'}} className=" relative">
-        <button className="
-        bg-accent w-full h-20 mt-32 rounded-xl outline-none flex items-center 
-        justify-center text-primary-700
-        "
-        onClick={handleUpload}
-        >
-        <span className="mr-2.5">
-            <Plus width={22} height={22}/>
-        </span>
-        <span className=" font-semibold text-xl">
-            Upload a Episode
-        </span>
-
-        </button>
-        <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleChange}
-            style={{display:'none'}}
-        />
-        <p className="pt-3.5 text-sm text-primary-300">Lorem ipsum dolor sit amet consectetur adipisicing elit. Debitis, error.</p>
-    </div>
-
+        {renderState(currentState)}
         </Modal>
     )
 }

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useContext, useEffect } from "react"
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize"
 import Banner from "../../ui/banner"
 import HorizontalScroll from "../../ui/horizontal_scroll"
@@ -13,12 +13,12 @@ import Categories  from "../../data/categories"
 import ExploreTabs from "../../data/explore_tabs"
 import Users from "../../data/users"
 import Podcasts from "../../data/podcasts"
+import { WSContext } from "../ws/ws_provider"
   
  const HomeController =()=>{
 
     const screenSize = useDetectScreenSize()
-
-    
+  
     return (
           <ControllerOverlay>
           

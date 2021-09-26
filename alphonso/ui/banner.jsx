@@ -1,4 +1,5 @@
 import React from "react"
+import { openUploadModal } from "../shared-components/modal/upload_modal"
 import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize"
 import Button from "./button"
 
@@ -29,6 +30,7 @@ const Banner = ({onClick, className, ...props}) =>{
              facilis enim laboriosam delectus ullam impedit.</p>
 
             <Button
+                onClick={()=> openUploadModal(true)}
                 className="mt-10 w-48"
                 label="Start Today"
 

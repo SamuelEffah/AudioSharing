@@ -1,12 +1,12 @@
-import React from "react";
+import React,{useEffect} from "react";
 import Link from "next/link";
 import router, {useRouter} from "next/router"
 import { Github, Google, Spinner } from "../../icons";
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize";
+import { Connection } from "../ws/socket";
+import { useTokenStore } from "../../stores/useTokens";
 
 const ProviderAuth = ({ provider, isLoading = false, icon, url, ...props }) => {
-  
-  
   return (
     <button
    
@@ -33,8 +33,11 @@ const ProviderAuth = ({ provider, isLoading = false, icon, url, ...props }) => {
 
 const Login = () => {
   const router = useRouter()
-  const screenSize = useDetectScreenSize()
 
+  const {a, r, error} = router.query
+  const screenSize = useDetectScreenSize()
+  const hasTokens = useTokenStore((s)=> !!(s.accessToken && s.refreshToken))
+  const {addTokens} = useTokenStore()
   let width = "450px"
   if (screenSize == "big-screen"){
     width = "450px"
@@ -46,6 +49,20 @@ const Login = () => {
     width="90%"
   }
 
+  // useEffect(() => {
+  //   if(hasTokens){
+  //     router.push("/discovery")
+  //     console.log("no tokens")
+  //   }
+  // }, [hasTokens])
+
+  //set tokens 
+  useEffect(()=>{
+    if(a && r){
+      addTokens(a,r)
+      router.push("/discovery")
+    }
+  },[a,r,addTokens])
 
 
 
@@ -83,8 +100,7 @@ const Login = () => {
               icon={<Github width={40} height={40} />}
               onClick={(e) => {
                 e.preventDefault();
-                router.push("/discovery")
-                // window.location.href = "http://localhost:4001/auth/github/";
+                 window.location.href = "http://localhost:4001/auth/github";
               }}
             />
             <ProviderAuth

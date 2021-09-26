@@ -63,7 +63,7 @@ const Tags = ({...props})=>{
         <p className="text-primary-600 mb-3 ">Tags</p>
         <div className="w-full flex flex-wrap items-center">
            {tagsList.map((v,i)=>{
-               console.log(v)
+            
                return <TagPill  
                key={i} 
          

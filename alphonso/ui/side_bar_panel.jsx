@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Button from "./button";
@@ -6,6 +6,7 @@ import Avatar from "./avatar";
 import { openUploadModal } from "../shared-components/modal/upload_modal";
 import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize";
 import Navigations from "../data/navigations"
+import { WSContext } from "../modules/ws/ws_provider";
 
 
 export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
@@ -49,7 +50,7 @@ export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
   );
 };
 
-const DefaultSideBar = (props) => {
+const DefaultSideBar = ({user,...props}) => {
   return (
     <div
       className="z-50 bg-primary-100 text-primary-700 fixed h-full"
@@ -67,18 +68,18 @@ const DefaultSideBar = (props) => {
         </div>
 
         <div className="flex justify-center w-full mt-20">
-          <Button onClick={() => openUploadModal()} label="Become a Creator" />
+          <Button onClick={() => openUploadModal(true)} label="Become a Creator" />
         </div>
         <div className="absolute bottom-16 flex items-center w-10/12">
-          <Avatar />
-          <p className="ml-2.5  text-md">Brian Waters</p>
+          <Avatar url={user?.profile_url}/>
+          <p className="ml-2.5  text-md">{user?.fullname}</p>
         </div>
       </div>
     </div>
   );
 };
 
-const TabletSideBar = (props) => {
+const TabletSideBar = ({user,...props}) => {
   return (
     <div
       className="z-50 bg-primary-100 text-primary-700 fixed h-full"
@@ -112,7 +113,7 @@ const TabletSideBar = (props) => {
             />
         </div> */}
         <div className="absolute bottom-16 flex justify-center w-10/12">
-          <Avatar />
+          <Avatar url={user?.profile_url} />
         </div>
       </div>
     </div>
@@ -121,19 +122,20 @@ const TabletSideBar = (props) => {
 
 const SideBarPanel = ({ ...props }) => {
   const screenSize = useDetectScreenSize();
+  const {user} = useContext(WSContext)
 
   let sideNav = null;
   if (screenSize === "big-screen") {
     sideNav = (
       <>
-        <DefaultSideBar {...props} />
+        <DefaultSideBar user={user} {...props} />
       </>
     );
   }
   if (screenSize === "desktop" || screenSize === "tablet") {
     sideNav = (
       <>
-        <TabletSideBar {...props} />
+        <TabletSideBar user={user} {...props} />
       </>
     );
   }

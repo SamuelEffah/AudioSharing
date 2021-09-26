@@ -10,6 +10,8 @@ import FollowersActivity from "../../ui/followers_activity_card";
 import PeopleToFollow from "../../ui/people_to_follow_card";
 import Player from "../../ui/player";
 import Search from "../../shared-components/search";
+import UploadModal from "../../shared-components/modal/upload_modal";
+import { WSAuth } from "../ws/ws_auth";
 
 const DesktopLayout = ({ children, className, ...props }) => {
   const screenSize = useDetectScreenSize();
@@ -50,11 +52,16 @@ const DesktopLayout = ({ children, className, ...props }) => {
   }
 
   return (
+    <WSAuth>
+ 
     <div className="w-full relative h-full text-primary-700">
       {main}
+      <UploadModal/>
       <DrawerMobile />
       <SearchModal />
     </div>
+         
+    </WSAuth>
   );
 };
 
