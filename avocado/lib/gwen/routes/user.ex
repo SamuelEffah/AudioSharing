@@ -17,6 +17,12 @@ defmodule Gwen.Routes.User do
     send_resp(conn, 200, "world")
   end
 
+  get "/:username" do
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(User.get_user_by_username(username)))
+  end
   post "/create" do
     data = conn.params["data"]
 

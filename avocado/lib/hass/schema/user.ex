@@ -1,7 +1,7 @@
 defmodule Hass.Schema.User do
   use Ecto.Schema
   import Ecto.Changeset
-
+  alias Hass.Schema.UserPreview
 
   @derive {Jason.Encoder, only: [:id]}
   @timestamps_opts [type: :utc_datetime_usec]
@@ -40,6 +40,7 @@ defmodule Hass.Schema.User do
     field(:is_creator, :boolean)
     field(:ip, :string)
 
+    embeds_one(:user_preview, UserPreview)
     timestamps()
   end
 
@@ -78,8 +79,8 @@ defmodule Hass.Schema.User do
 
 
   defimpl Jason.Encoder, for: __MODULE__ do
-    @fields ~w(id fullname username email profile_url current_activity is_admin is_online
-    is_creator)a
+    @fields ~w(id fullname username email  profile_url current_activity is_admin is_online
+    is_creator inserted_at)a
 
 
      defp transform(fields), do: fields

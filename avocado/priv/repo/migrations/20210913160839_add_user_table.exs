@@ -16,6 +16,7 @@ defmodule Hass.Repo.Migrations.AddUserTable do
       add :current_activity, :string
       add :is_creator, :boolean, default: false
       add :ip, :string
+      add :user_preview, :map
       timestamps()
     end
     create unique_index(:users, [:email, :username])
