@@ -21,16 +21,18 @@ defmodule Avocado.Utils.Auth do
 
           if user do
             UserSession.start_supervised(
-              user_id: user.id,
+              id: user.id,
               fullname: user.fullname,
               username: user.username,
               profile_url: user.profile_url,
-              current_activity: user.current_activity
+              current_activity: user.current_activity,
+              is_creator: user.is_creator,
+              is_admin: user.is_admin
             )
 
             {:ok, user}
           end
-
+          {:ok, user}
           Logger.info("user do not exit in session #{inspect(user_in_session)}")
         end
 

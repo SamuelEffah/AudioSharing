@@ -2,7 +2,7 @@ defmodule Gwen.Routes.User do
   use Plug.Router
   alias Hass.Schema.User
   alias Hass.Query.User
-
+  require Logger
 
   plug(Plug.Parsers,
     parsers: [:urlencoded, :json],
@@ -34,7 +34,7 @@ defmodule Gwen.Routes.User do
 
   post "/bot" do
     bots = conn.params["bots"]
-    IO.inspect bots
+
     Enum.each(bots, fn bot ->
       User.create_bot(bot)
     end
@@ -43,6 +43,48 @@ defmodule Gwen.Routes.User do
     # Repo.insert_all(User, bots)
     send_resp(conn, 200, "Success!")
   end
+
+
+
+  post "/follow" do
+    # data = conn.params["data"]
+    IO.inspect(conn)
+    Logger.info("follow user ...")
+    # user =  User.follow_user(data)
+    # IO.inspect(user)
+    # Repo.insert_all(User, bots)
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{msg: "testing"}))
+  end
+
+
+  get "/:username/followers" do
+    Logger.info("get user followers #{username}")
+    followers = User.get_user_followers(username)
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(followers))
+
+  end
+
+  get "/:username/following" do
+    Logger.info("get user following #{username}")
+    following = User.get_user_following(username)
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(following))
+  end
+
+  get "/:username/following/activity" do
+    Logger.info("get user followers activity #{inspect(username)}")
+    current_activity_following = User.get_user_current_activity_following(username)
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(current_activity_following))
+  end
+
 
 
 end

@@ -6,26 +6,30 @@ defmodule Avocado.UserSession do
 
   defmodule State do
     @type t :: %__MODULE__{
-            user_id: String.t(),
+            id: String.t(),
             profile_url: String.t(),
             username: String.t(),
             fullname: String.t(),
             current_activity: String.t(),
+            is_creator: Boolean.t(),
+            is_admin: Boolean.t(),
             pid: pid()
           }
 
-    defstruct user_id: nil,
+    defstruct id: nil,
               current_activity: nil,
               pid: nil,
               username: nil,
               fullname: nil,
+              is_creator: nil,
+              is_admin: nil,
               profile_url: nil
   end
 
-  defp via(user_id), do: {:via, Registry, {@registry, user_id}}
+  defp via(id), do: {:via, Registry, {@registry, id}}
 
-  defp cast(user_id, params), do: GenServer.cast(via(user_id), params)
-  defp call(user_id, params), do: GenServer.call(via(user_id), params)
+  defp cast(id, params), do: GenServer.cast(via(id), params)
+  defp call(id, params), do: GenServer.call(via(id), params)
 
   def start_supervised(initial_values) do
     callers = [self() | Process.get(:"$callers", [])]
@@ -39,14 +43,14 @@ defmodule Avocado.UserSession do
     end
   end
 
-  def child_spec(init), do: %{super(init) | id: Keyword.get(init, :user_id)}
+  def child_spec(init), do: %{super(init) | id: Keyword.get(init, :id)}
 
   def count, do: Registry.count(@registry)
 
-  def lookup(user_id), do: Registry.lookup(@registry, user_id)
+  def lookup(id), do: Registry.lookup(@registry, id)
 
   def start_link(init) do
-    GenServer.start_link(__MODULE__, init, name: via(init[:user_id]))
+    GenServer.start_link(__MODULE__, init, name: via(init[:id]))
   end
 
   def init(init) do
@@ -54,10 +58,10 @@ defmodule Avocado.UserSession do
     {:ok, struct(State, init)}
   end
 
-  def set(user_id, key, value), do: cast(user_id, {:set, key, value})
+  def set(id, key, value), do: cast(id, {:set, key, value})
 
-  def get(user_id, key), do: call(user_id, {:get, key})
-  def get_all(user_id), do: call(user_id, :get_all)
+  def get(id, key), do: call(id, {:get, key})
+  def get_all(id), do: call(id, :get_all)
 
 
   def handle_cast({:set, key, value}, state) do

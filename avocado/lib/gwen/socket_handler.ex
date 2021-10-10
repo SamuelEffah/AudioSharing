@@ -2,6 +2,7 @@ defmodule Gwen.SocketHandler do
   require Logger
 
   alias Avocado.Utils.Auth
+  alias Hass.Query.User
 
   @behaviour :cowboy_websocket
 
@@ -42,22 +43,64 @@ defmodule Gwen.SocketHandler do
              message["refresh_token"]
            )
       do
-      data = %{
-        status: "successful",
-        user: %{
-          fullname: user.fullname,
-          username: user.username,
-          profile_url: user.profile_url,
-          current_activity: user.current_activity
-        }
-      }
+      case message do
+        %{"op" => "auth"} ->
+          data = %{
+            status: "successful",
+            user: %{
+              id: user.id,
+              fullname: user.fullname,
+              username: user.username,
+              profile_url: user.profile_url,
+              current_activity: user.current_activity,
+              is_creator: user.is_creator,
+              is_admin: user.is_admin,
+            }
+          }
 
-      auth_data = Jason.encode!(data)
-      Logger.info("user info #{inspect(auth_data)}")
+          auth_data = Jason.encode!(data)
+          {:reply, {:text, auth_data}, state}
 
-      {:reply, {:text, auth_data}, state}
+          %{"op" => "follow_user"} ->
+           other_user_profile =  User.follow_user(message["follow_user"])
+
+            data = Map.from_struct(other_user_profile)
+            mod_data =
+              data
+              |> Map.put_new(:you_are_following, true)
+              |> Map.put_new(:follows_you, false)
+
+              other_user_profile = Jason.encode!(mod_data)
+
+            Logger.info("Follow mod user #{inspect(mod_data)}")
+            {:reply, {:text, other_user_profile}, state}
+          %{"op" => "get_user"} ->
+            data = message["get_user"]
+
+
+            get_user_info = Map.from_struct(User.get_user_by_username(data["username"]))
+            other_follow_info = User.get_info(data["me_id"], get_user_info.id)
+
+            mod_data_get_user = Map.merge(get_user_info, other_follow_info)
+
+
+
+            {:reply, {:text, Jason.encode!(mod_data_get_user)}, state}
+
+          %{"op"=> "user_update"} ->
+
+            data = message["user_update"]
+             user_updated = User.edit_profile(data)
+
+            {:reply, {:text, Jason.encode!(user_updated)}, state}
+
+      end
+
+
     else
-      _ -> {:reply, {:text, "something went wrong"}, state}
+      _ ->
+        error_msg = %{status: "error", msg: "Auth failed"}
+        {:reply, {:text, Jason.encode!(error_msg)}, state}
     end
 
   end

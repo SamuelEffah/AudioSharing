@@ -33,7 +33,7 @@ defmodule Gwen.Routes.Auth.Github do
         %Plug.Conn{private: %{github_user: user, github_token: %{access_token: access_token}}} =
           conn
       ) do
-    # Logger.info("Login User: #{inspect(user)}")
+    # Logger.info("Github Login User: #{inspect(user)}")
     {_, tokens: {a, r}} =
       UserQuery.find_or_create_account(
         %{

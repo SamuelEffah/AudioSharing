@@ -8,10 +8,13 @@ defmodule Gwen do
   alias Gwen.Routes.Auth.Google
   use Plug.Router
 
-
-  plug(Gwen.Cors)
   plug(:match)
   plug(:dispatch)
+
+  options _ do
+    send_resp(conn, 200, "")
+  end
+
 
   forward("/users", to: User)
   forward("/podcast", to: Podcast)

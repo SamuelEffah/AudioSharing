@@ -40,7 +40,7 @@ defmodule Hass.Schema.User do
     field(:is_creator, :boolean)
     field(:ip, :string)
 
-    embeds_one(:user_preview, UserPreview)
+    embeds_one(:user_preview, UserPreview, on_replace: :update)
     timestamps()
   end
 
@@ -75,6 +75,7 @@ defmodule Hass.Schema.User do
       |> validate_length(:fullname, min: 3, max: 50)
       |> unique_constraint(:username, name: :users_email_username_index)
       |> unique_constraint(:email, name: :users_email_username_index)
+
   end
 
 

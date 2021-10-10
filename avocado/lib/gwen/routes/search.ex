@@ -21,7 +21,7 @@ defmodule Gwen.Routes.Search do
     else: query
 
   results = UserQuery.search_for_podcast_or_user(query)
-  IO.inspect(results)
+
   conn
   |> put_resp_content_type("application/json")
   |> send_resp(200, Jason.encode!(%{results: results}))
