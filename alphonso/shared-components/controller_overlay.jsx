@@ -23,7 +23,7 @@ import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize"
     return(
 
         <div
-        className="text-primary-700  h-full pt-4 flex flex-col
+        className="text-primary-700  relative h-full pt-4 flex flex-col
        items-center"
        style={{...middleStyle}}
         >

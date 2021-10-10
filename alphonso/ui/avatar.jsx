@@ -8,7 +8,7 @@ const sizes = {
     
 }
 
-const Avatar = ({url, width=50, height=50, ...props})=>{
+const Avatar = ({url, width=50, height=50, optionStyles, ...props})=>{
 
     return (
         <div

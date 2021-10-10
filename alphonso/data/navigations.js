@@ -8,11 +8,6 @@ import { Discovery, Settings, Sound, Favorite } from "../icons";
     to: "/discovery",
   },
   {
-    label: "My Podcasts",
-    icon: <Sound width={21} height={21} />,
-    to: "/my-podcasts",
-  },
-  {
     label: "Favorites",
     icon: <Favorite width={20} height={20} />,
     to: "/favorites",

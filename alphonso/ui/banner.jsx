@@ -31,7 +31,7 @@ const Banner = ({onClick, className, ...props}) =>{
 
             <Button
                 onClick={()=> openUploadModal(true)}
-                className="mt-10 w-48"
+                className="mt-10 w-48 bg-accent"
                 label="Start Today"
 
             />

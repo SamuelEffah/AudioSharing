@@ -1,5 +1,6 @@
 import React, {useContext, useEffect} from "react"
 import { Spinner } from "../../icons"
+import { useTokenStore } from "../../stores/useTokens"
 import { WSContext } from "./ws_provider"
 
 
@@ -7,6 +8,7 @@ import { WSContext } from "./ws_provider"
  export const WSAuth = ({children,...props})=>{
 
     const {conn, isConnecting}  = useContext(WSContext)
+
 
     if(isConnecting){
         return (

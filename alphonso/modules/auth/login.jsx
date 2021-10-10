@@ -33,6 +33,7 @@ const ProviderAuth = ({ provider, isLoading = false, icon, url, ...props }) => {
 
 const Login = () => {
   const router = useRouter()
+  const {push} = useRouter()
 
   const {a, r, error} = router.query
   const screenSize = useDetectScreenSize()
@@ -60,11 +61,15 @@ const Login = () => {
   useEffect(()=>{
     if(a && r){
       addTokens(a,r)
-      router.push("/discovery")
+      push("/discovery")
     }
-  },[a,r,addTokens])
+  },[a,r,addTokens,push])
 
-
+  useEffect(()=>{
+    if(hasTokens){
+      push("/discovery")
+    }
+  },[hasTokens, push])
 
   return (
     <div

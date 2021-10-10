@@ -27,7 +27,6 @@ const DesktopLayout = ({ children, className, ...props }) => {
         <RightPanel>
           <Search/>
           <FollowersActivity />
-          <PeopleToFollow />
           <Player />
         </RightPanel>
       </>

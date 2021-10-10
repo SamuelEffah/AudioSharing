@@ -29,7 +29,8 @@ module.exports = {
       accent:{
         DEFAULT: "var(--color-accent)",
         100: "var(--color-accent-200)"
-      }
+      },
+      border: "var(--color-border)"
 
     },
     extend: {

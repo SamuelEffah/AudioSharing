@@ -1,19 +1,19 @@
 import React from "react"
 
 
- const Button = ({icon,label,height=42, onClick,className, ...props}) => {
+ const Button = ({icon,label,height=42,className, ...props}) => {
 
     return(
         <button
         style={{color:"#fff", height:`${height}px`}}
         className={`
         outline-none
-        bg-accent
+  
         rounded-full
         flex items-center justify-center 
-        ${className ? className : 'w-10/12 '}
+        ${className ? className  : 'w-10/12 bg-accent'}
         `}
-        onClick = {onClick} 
+        
         {...props}
         >
             {icon ? icon : null}

@@ -35,7 +35,6 @@ const SearchItem = ({ item }) => {
 
 
 const SearchResults = ({results})=>{
-    console.log(results)
     return (
         <div
         style={{backgroundColor: "#111314",
@@ -71,7 +70,7 @@ const Search = ({...props})=>{
     useEffect(()=>{
         if(query){
             setIsSearch(true)
-            console.log("adfdasfsa")
+           
         }
         return ()=>{
             setIsSearch(false)

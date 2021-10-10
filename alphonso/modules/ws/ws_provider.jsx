@@ -17,23 +17,30 @@ export const WSContext = createContext({
 
 
 export const WSProvider = ({children})=>{
-
+    const {replace} = useRouter()
     const [user, setUser] = useState(null)
     const [conn, setConn] = useState(null)
     const [isConnecting, setIsConnecting] = useState(true)
-    const {isTokens,accessToken, refreshToken} = useTokenStore()
+    const {isTokens,accessToken, refreshToken,clearTokens} = useTokenStore()
     
     
 
     //reconnect to server there're tokens
     useEffect(()=>{
-        if(!conn){
+        if(!conn && accessToken && refreshToken){
             setIsConnecting(true)
            Connection(accessToken, refreshToken).then((c)=>{
-               setConn(c)
+                console.log(c.user)   
+            setConn(c)
                setUser(c.user)
               
                setIsConnecting(false)
+           }).catch(err=>{
+               clearTokens()
+               console.log(accessToken)
+               console.log(refreshToken)
+               console.log(window.location.pathname)
+            replace(`/?next=${window.location.pathname}`);
            })
         
         }

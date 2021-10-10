@@ -7,6 +7,7 @@ import { openUploadModal } from "../shared-components/modal/upload_modal";
 import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize";
 import Navigations from "../data/navigations"
 import { WSContext } from "../modules/ws/ws_provider";
+import { Admin, Sound } from "../icons";
 
 
 export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
@@ -51,6 +52,7 @@ export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
 };
 
 const DefaultSideBar = ({user,...props}) => {
+
   return (
     <div
       className="z-50 bg-primary-100 text-primary-700 fixed h-full"
@@ -63,16 +65,45 @@ const DefaultSideBar = ({user,...props}) => {
 
         <div className="w-full mt-20">
           {Navigations.map((v, i) => {
-            return <NavItem key={i} to={v.to} label={v.label} icon={v.icon} />;
+           
+              return <NavItem key={i} to={v.to} label={v.label} icon={v.icon} />
+            {/* return <NavItem key={i} to={v.to} label={v.label} icon={v.icon} />; */}
           })}
+          {user && user.is_creator ? (
+            <NavItem
+                 key={"podcasts_nav"}
+                 label="My Podcasts"
+                 icon={<Sound width={21} height={21} />}
+                 to="my-podcasts"
+               />
+
+          ) : null}
+          
+          {user && user.is_admin ? (
+            <NavItem
+                 key = {"admin_panel"}
+                 label="Admin Panel"
+                 icon={<Admin width={21} height={21} />}
+                 to="admin"
+               />
+
+          ) : null}
+
+       
+           
         </div>
 
         <div className="flex justify-center w-full mt-20">
           <Button onClick={() => openUploadModal(true)} label="Become a Creator" />
         </div>
         <div className="absolute bottom-16 flex items-center w-10/12">
+        <Link href={`/profile/${user?.username}`}>
+          <a className="flex items-center ">
           <Avatar url={user?.profile_url}/>
           <p className="ml-2.5  text-md">{user?.fullname}</p>
+
+          </a>
+        </Link>
         </div>
       </div>
     </div>
@@ -92,6 +123,7 @@ const TabletSideBar = ({user,...props}) => {
 
         <div className="w-full mt-20">
           {Navigations.map((v, i) => {
+            
             return (
               <NavItem
                 isIconBtn={true}
@@ -113,7 +145,12 @@ const TabletSideBar = ({user,...props}) => {
             />
         </div> */}
         <div className="absolute bottom-16 flex justify-center w-10/12">
-          <Avatar url={user?.profile_url} />
+          <Link href={`/profile/${user?.username}`}>
+          <a>
+          <Avatar url={user?.profile_url}/>
+
+          </a>
+        </Link>
         </div>
       </div>
     </div>

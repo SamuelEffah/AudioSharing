@@ -28,4 +28,8 @@ export {VolumeMute} from "./volume_mute_icon"
 export {VolumeHigh} from "./volume_high_icon"
 export {VolumeMedium} from "./volume_medium_icon"
 
-
+export {Admin} from "./admin_icon"
+export {Chart} from "./chart_icon"
+export {UsersData} from "./users_data_icon"
+export {NextData} from "./next_data"
+export {PrevData} from "./prev_data"

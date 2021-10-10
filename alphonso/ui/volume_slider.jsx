@@ -54,8 +54,9 @@ const VolumeSlider = ({ isMute = false, className, ...props }) => {
       onMouseLeave={() => setIsAnimateHeight(false)}
       animate={isAnimateHeight ? "visible" : "hidden"}
       variants={variants}
+      initial={"hidden"}
       style={{ backgroundColor: "#DADADA" }}
-      className="w-9 absolute flex-shrink-0 bottom-7 z-50 right-3 flex
+      className="w-9 absolute flex-shrink-0 bottom-7 z-40 right-3 flex
       flex-col items-center justify-end
         rounded-full "
     >

@@ -5,11 +5,16 @@ export const Connection = (access_token, refresh_token) => {
 
     socket.onmessage = (e) => {
       if (e.data === "pong") {
+        console.log(e.data)
         return;
       }
 
-      const data = JSON.parse(e.data);
-      if (data.status === "successful") {
+      if(JSON.parse(e.data).status == "error"){
+        reject(JSON.parse(e.data).msg)
+      }
+      
+      if (JSON.parse(e.data).status === "successful") {
+        const data = JSON.parse(e.data)
         const action = {
           close: () => {
             socket.close();
@@ -21,11 +26,25 @@ export const Connection = (access_token, refresh_token) => {
             return () => listeners.splice(listeners.indexOf(listener), 1);
           },
           ping: () => {
+            console.log("ping....")
             socket.onopen = () => {
+              console.log("connection open..")
               socket.send("ping");
             };
+         
           },
-          user: data.user
+          user: data.user,
+          send:(data)=>{
+         
+            console.log("data ")
+         
+              // socket.send(JSON.stringify({
+              //   ...data,
+              //   access_token,
+              //   refresh_token
+              // }))
+            
+          }
         };
         resolve(action)
       }
