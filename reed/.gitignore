@@ -4,3 +4,5 @@ dist
 build
 Pipfile
 Pipfile.lock
+.env
+/api/config.py
