@@ -64,8 +64,7 @@ defmodule Hass.Query.Episode do
       name: data["name"],
       description: data["description"],
       file_name: data["file_name"],
-      podcast_id: data["podcast_id"],
-      media_type: data["media_type"]
+      podcast_id: data["podcast_id"]
     }
 
     changeset = Episode.changeset(new_episode)

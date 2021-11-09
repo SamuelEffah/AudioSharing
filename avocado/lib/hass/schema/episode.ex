@@ -17,7 +17,7 @@ defmodule Hass.Schema.Episode do
     field(:is_ban, :boolean, default: false)
     field(:num_of_listeners, :integer, default: 0)
     field(:file_name, :string)
-    field(:media_type, :string)
+
 
 
      belongs_to(:podcast, Podcast, foreign_key: :podcast_id, type: :binary_id)
@@ -30,7 +30,6 @@ defmodule Hass.Schema.Episode do
     :id,
     :name,
     :file_name,
-    :media_type,
     :podcast_id,
     :description,
   ])
@@ -38,7 +37,6 @@ defmodule Hass.Schema.Episode do
     :name,
     :description,
     :file_name,
-    :media_type,
     :podcast_id
   ])
   |> validate_length(:name, min: 3, max: 100)
@@ -48,7 +46,7 @@ end
 
 
 defimpl Jason.Encoder, for: __MODULE__  do
-  @fields ~w(id name description file_name media_type num_of_listeners podcast_id)a
+  @fields ~w(id name description file_name media_type inserted_at num_of_listeners podcast_id)a
 
   defp transform(fields), do: fields
 

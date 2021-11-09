@@ -27,13 +27,16 @@ defmodule Avocado.Utils.Auth do
               profile_url: user.profile_url,
               current_activity: user.current_activity,
               is_creator: user.is_creator,
-              is_admin: user.is_admin
+              is_admin: user.is_admin,
+              joined_on: user.joined_on,
+              num_of_followers: user.num_of_followers,
+              num_of_following: user.num_of_following,
+              num_of_podcasts: user.num_of_podcasts
             )
-
-            {:ok, user}
           end
-          {:ok, user}
           Logger.info("user do not exit in session #{inspect(user_in_session)}")
+          Logger.info("user do not exit in session #{inspect(user)}")
+          {:ok, user}
         end
 
       {:error, msg} ->

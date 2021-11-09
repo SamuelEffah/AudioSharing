@@ -15,6 +15,8 @@ defmodule Hass.Schema.UserPreview do
     field(:is_creator, :boolean, default: false)
     field(:current_activity, :string)
     field(:profile_url, :string)
+    field(:is_admin, :boolean, default: false)
+    field(:joined_on, :utc_datetime_usec)
 
   end
 
@@ -29,13 +31,14 @@ defmodule Hass.Schema.UserPreview do
       :num_of_followers,
       :num_of_following,
       :num_of_podcasts,
-      :is_creator
+      :is_creator,
+      :is_admin
     ])
   end
 
   defimpl Jason.Encoder, for: __MODULE__ do
     @fields ~w(id fullname username is_creator current_activity num_of_followers
-    num_of_following num_of_podcasts profile_url)a
+    num_of_following num_of_podcasts profile_url is_admin joined_on)a
 
     # defp transform_current_room(fields), do: fields
 

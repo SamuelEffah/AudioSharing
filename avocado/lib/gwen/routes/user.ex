@@ -26,6 +26,7 @@ defmodule Gwen.Routes.User do
   post "/create" do
     data = conn.params["data"]
 
+
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Jason.encode!(User.find_or_create_account(data)))
@@ -47,15 +48,11 @@ defmodule Gwen.Routes.User do
 
 
   post "/follow" do
-    # data = conn.params["data"]
-    IO.inspect(conn)
-    Logger.info("follow user ...")
-    # user =  User.follow_user(data)
-    # IO.inspect(user)
-    # Repo.insert_all(User, bots)
+    data = conn.params["data"]
+    user =  User.follow_user(data)
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(200, Jason.encode!(%{msg: "testing"}))
+    |> send_resp(200, Jason.encode!(%{msg: "Successful"}))
   end
 
 

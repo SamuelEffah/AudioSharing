@@ -13,6 +13,10 @@ defmodule Avocado.UserSession do
             current_activity: String.t(),
             is_creator: Boolean.t(),
             is_admin: Boolean.t(),
+            num_of_podcasts: Integer.t(),
+            num_of_followers: Integer.t(),
+            num_of_following: Integer.t(),
+            joined_on: DateTime.t(),
             pid: pid()
           }
 
@@ -23,7 +27,12 @@ defmodule Avocado.UserSession do
               fullname: nil,
               is_creator: nil,
               is_admin: nil,
-              profile_url: nil
+              profile_url: nil,
+              num_of_podcasts: nil,
+              num_of_followers: nil,
+              num_of_following: nil,
+              joined_on: nil
+
   end
 
   defp via(id), do: {:via, Registry, {@registry, id}}
@@ -60,9 +69,18 @@ defmodule Avocado.UserSession do
 
   def set(id, key, value), do: cast(id, {:set, key, value})
 
+
+  def set_is_creator(id, value) do
+    cast(id, {:set_is_creator, value})
+  end
+
   def get(id, key), do: call(id, {:get, key})
   def get_all(id), do: call(id, :get_all)
 
+  def handle_cast({:set_is_creator, value}, state) do
+    {:noreply, Map.merge(state, %{is_creator: value})}
+
+  end
 
   def handle_cast({:set, key, value}, state) do
     {:noreply, Map.put(state, key, value), state}

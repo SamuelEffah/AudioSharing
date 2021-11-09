@@ -1,6 +1,9 @@
 defmodule Hass.Query.Podcast do
   import Ecto.Query, warn: false
   alias Hass.Repo
+  alias Hass.Query.Episode
+  alias Hass.Schema.Episode
+  alias Hass.Query.User
 
   alias Hass.Schema.Podcast
 
@@ -11,15 +14,16 @@ defmodule Hass.Query.Podcast do
   end
 
   def get_podcasts_by_user_id(user_id) do
-    podcasts =
-      get()
-      |> where([p], p.creator_id == ^user_id)
-      |> order_by([p], desc: p.inserted_at)
-      |> limit([], 10)
-      |> select([p], p)
-      |> Repo.all()
-
-    podcasts
+    query =
+      from p in Podcast,
+      join: e in Episode,
+      on: p.id == e.podcast_id,
+      group_by: p.id,
+      where: p.creator_id == ^user_id,
+      select: %{ p | num_of_eps: count(e.id)},
+      limit: 10,
+      order_by: [desc: p.inserted_at]
+   Repo.all(query)
   end
 
   def get_podcast(podcast_id) do
@@ -30,19 +34,45 @@ defmodule Hass.Query.Podcast do
   end
 
   def get_latest_podcasts() do
-    get()
-    |> order_by([p], desc: p.inserted_at)
-    |> limit([], 10)
-    |> select([p], p)
-    |> Repo.all()
+    query =
+      from p in Podcast,
+      join: e in Episode,
+      on: p.id == e.podcast_id,
+      group_by: p.id,
+      select: %{ p | num_of_eps: count(e.id)},
+      limit: 10,
+      order_by: [desc: p.inserted_at]
+   Repo.all(query)
+
   end
 
+  @spec get_top_podcasts(any) :: any
   def get_top_podcasts(num_of_listeners \\ 10) do
-    get()
-    |> where([p], p.num_of_listeners > ^num_of_listeners)
-    |> limit([], 10)
-    |> select([p], p)
-    |> Repo.all()
+    query =
+      from p in Podcast,
+      join: e in Episode,
+      on: p.id == e.podcast_id,
+      group_by: p.id,
+      where: p.num_of_listeners > ^num_of_listeners,
+      select: %{ p | num_of_eps: count(e.id)},
+      limit: 10,
+      order_by: [desc: p.inserted_at]
+   Repo.all(query)
+
+  end
+
+
+  def get_podcast_by_filter(filter) do
+    query =
+      from p in Podcast,
+      join: e in Episode,
+      on: p.id == e.podcast_id,
+      group_by: p.id,
+      where: ^filter == fragment("ANY(?)", p.tags),
+      select: %{ p | num_of_eps: count(e.id)},
+      limit: 10,
+      order_by: [desc: p.inserted_at]
+   Repo.all(query)
   end
 
   def create_podcast(data) do
@@ -51,8 +81,10 @@ defmodule Hass.Query.Podcast do
       description: data["description"],
       subtitle: data["subtitle"],
       poster_url: data["poster_url"],
-      is_publish: data["is_publish"],
-      creator_id: data["creator_id"]
+      is_publish: true,
+      creator_id: data["creator_id"],
+      tags: data["tags"]
+
     }
 
     changeset = Podcast.changeset(new_podcast)
@@ -63,9 +95,33 @@ defmodule Hass.Query.Podcast do
         {:error, "Something went wrong!"}
 
       {:ok, podcast} ->
+        new_episode = %Episode{
+          name: data["episodeName"],
+          description: data["episodeDescription"],
+          file_name: data["file_name"],
+          podcast_id: podcast.id
+        }
+        episode_changeset = Episode.changeset(new_episode)
+       episode_created = Repo.insert!(episode_changeset)
+        if episode_created do
+          User.increment_podcast(podcast.creator_id)
+          Logger.info("Episode created #{inspect(episode_created)}")
+        end
         Logger.info("created podcast #{inspect(podcast)}")
         {:created, "Podcast created!"}
     end
+  end
+
+
+  def get_podcast_episodes(id) do
+    query =
+      from p in Podcast,
+      join: e in Episode,
+      on: p.id == e.podcast_id,
+      where: p.id == ^id,
+      select: e,
+      order_by: [desc: e.inserted_at]
+   Repo.all(query)
   end
 
   def delete_podcast(podcast_id) do

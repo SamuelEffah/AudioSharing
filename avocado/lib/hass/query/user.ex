@@ -9,6 +9,7 @@ defmodule Hass.Query.User do
   require Logger
   alias Avocado.Utils.AccessToken
   alias Avocado.Utils.RefreshToken
+  alias Avocado.UserSession
 
   def get() do
     from(u in User)
@@ -24,16 +25,19 @@ defmodule Hass.Query.User do
       nil ->
           get()
           |> where([u], u.id == ^id)
+          |> select([u], %{u.user_preview | joined_on: u.inserted_at})
           |> Repo.one()
 
       "github" ->
         get()
           |> where([u], u.github_id == ^id)
+          |> select([u], %{u.user_preview | joined_on: u.inserted_at})
           |> Repo.one()
 
       "google" ->
         get()
         |> where([u], u.google_id == ^id)
+        |> select([u], %{u.user_preview | joined_on: u.inserted_at})
         |> Repo.one()
     end
 
@@ -60,7 +64,8 @@ defmodule Hass.Query.User do
           fullname: user["name"],
           username: user["login"],
           profile_url: user["avatar_url"],
-          is_creator: false
+          is_creator: false,
+          is_admin: false
         }
 
         changeset = User.changeset(new_user)
@@ -144,7 +149,7 @@ defmodule Hass.Query.User do
     |> or_where([u], ilike(u.fullname, ^search_term))
     |> order_by([u], desc: u.fullname)
     |> limit([], 10)
-    |> select([u], u)
+    |> select([u], %{u.user_preview | joined_on: u.inserted_at})
     |> Repo.all()
   end
 
@@ -177,7 +182,7 @@ defmodule Hass.Query.User do
 
   user =   get()
     |> where([u], u.username == ^username)
-    |> select([u], u.user_preview)
+    |> select([u], %{u.user_preview | joined_on: u.inserted_at})
     |> Repo.one()
 
     user
@@ -208,7 +213,7 @@ defmodule Hass.Query.User do
       join: f in Follows,
       on: u.id == f.user_id,
       where: f.follower_id == ^user.id,
-      select: u.user_preview,
+      select: %{u.user_preview | joined_on: u.inserted_at},
       order_by: [desc: f.inserted_at]
 
      Repo.all(query)
@@ -223,7 +228,7 @@ defmodule Hass.Query.User do
         join: f in Follows,
         on: u.id == f.follower_id,
         where: f.user_id == ^user.id,
-        select: u.user_preview,
+        select: %{u.user_preview | joined_on: u.inserted_at},
         order_by: [desc: f.inserted_at]
        Repo.all(query)
     end
@@ -415,4 +420,34 @@ defmodule Hass.Query.User do
     end
 
   end
+
+
+
+  def promote_to_creator(user_id) do
+    user_cached_updated = UserSession.get_all(user_id)
+    user_struct = %{
+      is_creator: true
+    }
+    if not  user_cached_updated.is_creator do
+    UserSession.set_is_creator(user_id, true)
+
+    user_update =
+      Repo.get_by(User, id: user_id)
+      |> Ecto.Changeset.change(user_struct)
+      |> Ecto.Changeset.put_embed(:user_preview, user_struct)
+      |> Repo.update!()
+    # from(u in User,
+    #   where: u.id == ^user_id,
+    #   update: [set: [is_creator: true]])
+    # |> Repo.update_all([])
+
+
+    Logger.info("user from prom upd #{inspect(user_cached_updated)}")
+    end
+    user_cached_updated = UserSession.get_all(user_id)
+    user_cached_updated
+  end
+
+
+
 end
