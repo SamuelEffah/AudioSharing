@@ -15,7 +15,7 @@ export const InputField = ({label,icon,isError,
     return (
         <div className={`mb-5 flex-shrink-0`}>
         <p className="text-primary-600 mb-0.5 ">{label}</p>
-        <div className={`bg-primary-100 rounded flex ${className}
+        <div className={`bg-primary-100 text-primary-700 rounded flex ${className}
          ${disabled ? 'cursor-not-allowed': ''}   ${errorClassName} `}>
             <Input  disabled={disabled} {...props}/>
         </div>

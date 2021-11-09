@@ -7,8 +7,10 @@ import { openUploadModal } from "../shared-components/modal/upload_modal";
 import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize";
 import Navigations from "../data/navigations"
 import { WSContext } from "../modules/ws/ws_provider";
-import { Admin, Sound } from "../icons";
-
+import { Admin, Sound, Upload } from "../icons";
+import IconButton from "./icon_button"
+import CreatorTag from "./creator_tag";
+import { useProfileStore } from "../stores/useProfileStore";
 
 export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
   const router = useRouter();
@@ -52,7 +54,8 @@ export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
 };
 
 const DefaultSideBar = ({user,...props}) => {
-
+  const router = useRouter();
+  const {addProfile} = useProfileStore()
   return (
     <div
       className="z-50 bg-primary-100 text-primary-700 fixed h-full"
@@ -74,7 +77,7 @@ const DefaultSideBar = ({user,...props}) => {
                  key={"podcasts_nav"}
                  label="My Podcasts"
                  icon={<Sound width={21} height={21} />}
-                 to="my-podcasts"
+                 to="/my-podcasts"
                />
 
           ) : null}
@@ -84,7 +87,7 @@ const DefaultSideBar = ({user,...props}) => {
                  key = {"admin_panel"}
                  label="Admin Panel"
                  icon={<Admin width={21} height={21} />}
-                 to="admin"
+                 to="/admin"
                />
 
           ) : null}
@@ -94,16 +97,28 @@ const DefaultSideBar = ({user,...props}) => {
         </div>
 
         <div className="flex justify-center w-full mt-20">
-          <Button onClick={() => openUploadModal(true)} label="Become a Creator" />
+          <Button onClick={() => openUploadModal(true)} 
+          label= {user && user.is_creator ? "Upload a Podcast" : "Become a Creator"} />
         </div>
-        <div className="absolute bottom-16 flex items-center w-10/12">
-        <Link href={`/profile/${user?.username}`}>
-          <a className="flex items-center ">
+        <div
+           onClick={(e)=>{
+          addProfile(user)
+          router.push(`/profile/${user?.username}`)
+        }}
+        
+         className="absolute bottom-16 cursor-pointer flex items-center w-10/12">
+        
+        
           <Avatar url={user?.profile_url}/>
-          <p className="ml-2.5  text-md">{user?.fullname}</p>
+          <div>
+          <p className="ml-2.5 text-md">{user?.fullname}</p>
+          
+          {user && user.is_creator ? (
+          <CreatorTag className="ml-2.5"/>
+          ) : null}
+          </div>
 
-          </a>
-        </Link>
+        
         </div>
       </div>
     </div>
@@ -111,9 +126,11 @@ const DefaultSideBar = ({user,...props}) => {
 };
 
 const TabletSideBar = ({user,...props}) => {
+  const router = useRouter();
+  const {addProfile} = useProfileStore()
   return (
-    <div
-      className="z-50 bg-primary-100 text-primary-700 fixed h-full"
+    <div bg-primary-100 
+      className="z-50text-primary-700 fixed h-full"
       style={{ width: "120px" }}
     >
       <div className="flex flex-col items-center w-full relative h-full ">
@@ -136,21 +153,25 @@ const TabletSideBar = ({user,...props}) => {
           })}
         </div>
 
-        {/* <div className="flex justify-center w-full mt-20">
-            <Button
-            onClick={()=> openUploadModal()}
-  
-            label="Become a Creator"
-
-            />
-        </div> */}
+        <div className="flex justify-center w-full mt-20">
+            <button
+            className="
+            flex items-center justify-center
+            border-none w-16 h-16 rounded-xl bg-accent"
+            onClick={()=> openUploadModal(true)}
+            >
+            <Upload width={34} height={34}/>
+            </button>
+        </div>
         <div className="absolute bottom-16 flex justify-center w-10/12">
-          <Link href={`/profile/${user?.username}`}>
-          <a>
-          <Avatar url={user?.profile_url}/>
-
-          </a>
-        </Link>
+          <Avatar
+          className="cursor-pointer"
+            onClick={(e)=>{
+          addProfile(user)
+          router.push(`/profile/${user?.username}`)
+        }}
+        
+           url={user?.profile_url}/>
         </div>
       </div>
     </div>

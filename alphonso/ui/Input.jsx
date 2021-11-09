@@ -13,10 +13,10 @@ export const Input = ({
         <textarea
           placeholder
           disabled={disabled}
-          {...props}
-          className={`bg-transparent flex-shrink-0 h-16  w-full focus:outline-none resize-none  ${
+          className={`bg-transparent text-primary-700 flex-shrink-0 h-16  w-full focus:outline-none resize-none  ${
             disabled ? "cursor-not-allowed" : ""
           }`}
+          {...props}
         />
       ) : (
         <input

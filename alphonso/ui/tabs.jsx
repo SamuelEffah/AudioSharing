@@ -2,15 +2,14 @@ import React, {useCallback, useState} from "react"
 
 
 
-const Tabs = ({data=[],className, ...props})=>{
-    const [currentIndx, setCurrentIndx] = useState(1);
+const Tabs = ({data=[], currentIndx, setCurrentIndx, className, ...props})=>{
+    // const [currentIndx, setCurrentIndx] = useState(1);
     const activeClass = 'text-accent-100 '
     const inActiveClass = 'text-primary-300'
 
     const handleTab = useCallback((indx)=>{
         setCurrentIndx(indx)
-        
-    },[currentIndx])
+    },[setCurrentIndx])
 
     return (
         <div className="flex items-center mt-3 mb-6">

@@ -1,12 +1,14 @@
-import React, {useState, useRef} from "react"
+import React, {useState, useRef, useContext} from "react"
 import { Plus } from "../../icons"
 import { useModalStore } from "./upload_modal"
-
+import { useUploadAudioStore } from "../../stores/useUploadAudioStore"
 
 
 export const UploadFile = ({...props})=>{
     const {setCurrentState} = useModalStore()
+    const {addFile} = useUploadAudioStore()
     const fileInputRef = useRef(null)
+   
 
 const handleUpload = (e)=>{
  
@@ -14,8 +16,14 @@ const handleUpload = (e)=>{
 }
 
 const handleChange = (e) =>{
-    console.log("open file upload")
-    console.log(e.target.files)
+
+    // TODO validate file type sending to server
+    if(e.target.files){
+        addFile(e.target.files[0])
+       
+    }
+
+
 
     setCurrentState(1)
 

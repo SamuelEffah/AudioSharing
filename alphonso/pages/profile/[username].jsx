@@ -12,6 +12,8 @@ import axios from "axios";
 import { useTokenStore } from "../../stores/useTokens";
 import { useProfileStore } from "../../stores/useProfileStore";
 import { FollowsController } from "../../modules/controller/follows_controller";
+import { openEditProfileModal } from "../../shared-components/modal/edit_profile_modal";
+import CreatorTag from "../../ui/creator_tag";
 
 const ProfileTab = ({ label, size, isActive = false, ...props }) => {
   return (
@@ -38,13 +40,88 @@ const Profile = ({ ...props }) => {
 
 
   const {profile, addProfile, updateProfile} = useProfileStore()
+
   const router = useRouter();
   const {user} = useContext(WSContext)
   const {accessToken, refreshToken} = useTokenStore()
   const { username } = router.query;
 
+  // if(!user){
+  //   return (
+  //     <div>
+  //       no user 
+  //     </div>
+  //   )
+  // }
+
+  // if (username && user && !profile){
+   
+
+  //   let ws = new WebSocket("ws://localhost:4001/socket")
+  //   ws.onopen=()=>{
+
+  //     let data = {
+  //       op:"get_user",
+  //       access_token: accessToken,
+  //       refresh_token: refreshToken,
+  //       get_user:{
+  //         me_id: user.id,
+  //         username: username
+
+  //       }
+  //     }
+
+  //     ws.send(JSON.stringify(data))
+
+  //   }
+  //   ws.onmessage=(e)=>{
+  //     if(e.data){
+  //       updateProfile(JSON.parse(e.data))
+  //     }
+  //   }
+  // }
+
+ 
+
+
+  // useEffect(()=>{ 
+  // if(user && username && !profile){
+
+
+  //   let ws = new WebSocket("ws://localhost:4001/socket")
+  //   ws.onopen=()=>{
+
+  //     let data = {
+  //       op:"get_user",
+  //       access_token: accessToken,
+  //       refresh_token: refreshToken,
+  //       get_user:{
+  //         me_id: user.id,
+  //         username: username
+
+  //       }
+  //     }
+
+  //     ws.send(JSON.stringify(data))
+
+  //   }
+  //   ws.onmessage=(e)=>{
+  //     if(e.data){
+  //       updateProfile(JSON.parse(e.data))
+  //     }
+  //   }
+
+  // }
+
+  // //  return()=>{
+  // //    addProfile(null)
+  // //  }
+  // },[username, user, profile])
+
   useEffect(()=>{ 
-  
+
+
+
     let ws = new WebSocket("ws://localhost:4001/socket")
     ws.onopen=()=>{
 
@@ -64,15 +141,16 @@ const Profile = ({ ...props }) => {
     }
     ws.onmessage=(e)=>{
       if(e.data){
-       
-        addProfile(JSON.parse(e.data))
+        updateProfile(JSON.parse(e.data))
       }
     }
 
-    return ()=>{
-      addProfile(null)
-    }
-  },[router])
+  
+
+   return()=>{
+     addProfile(null)
+   }
+  },[])
 
 
   const followUser = ()=>{
@@ -117,7 +195,7 @@ const Profile = ({ ...props }) => {
 
     >
    <ControllerOverlay>
-     <div style={{width: "95%"}} className="flex relative flex-col items-center">
+     <div style={{width: "95%", overflowY: 'auto'}} className="flex  relative flex-col items-center">
      <div style={{ width: "96%" }} className={` relative flex mt-12
         ${screenSize === "mobile" ? 'flex-col items-center' : 'flex-col items-center'}
       
@@ -126,7 +204,7 @@ const Profile = ({ ...props }) => {
 
      <img
           src={profile?.profile_url}
-          style={{ width: (screenSize === 
+          style={{objectFit:"cover", width: (screenSize === 
           "mobile" ? "120px": "140px"), height: (screenSize === "mobile"? "120px" :"140px" ),
         
           }}
@@ -151,15 +229,22 @@ const Profile = ({ ...props }) => {
         <div style={{ width: screenSize === "mobile" ? "100%" : "100%" }} 
         className="flex flex-col pt-3  items-center">
           <h4 className="text-2xl text-semibold ">{profile?.fullname}</h4>
-          <small className="text-sm pt-0 pb-2 text-primary-300">@{username}</small>
-          <small className="text-sm pt-3 text-primary-300">Joineed on {moment(profile?.inserted_at).format("LL")}</small>
+          <small className="text-sm pt-0 pb-2 text-primary-300">@{profile?.username}</small>
+         {profile && profile.is_creator ? (
+         <CreatorTag/>
+         ) : null }
+
+          <small className="text-sm pt-3 text-primary-300">Joined on {moment(profile?.joined_on).format("LL")}</small>
         </div>
      </div>
     {
       user && profile &&(user.username === profile.username) ?
     <Button 
-    className="w-48 mt-8 h-10 bg-primary-100 "
+    className="w-48 mt-5 h-10 py-2.5 bg-primary-100 "
       label="Edit Profile"
+      onClick={()=>{
+        openEditProfileModal(true)
+      }}
     /> :
 
     <Button 
@@ -177,7 +262,9 @@ const Profile = ({ ...props }) => {
 
      <div className="flex justify-between  w-8/12 mt-10">
      
-     <ProfileTab
+     {profile && user && profile.is_creator && user.id == profile.id ? null : (
+
+      <ProfileTab
           label="Podcast"
           size={profile?.num_of_podcasts}
           isActive={currentTabIndx == 0 ? true : false}
@@ -186,6 +273,10 @@ const Profile = ({ ...props }) => {
             setCurrentTabIndx(0);
           }}
         />
+     )
+     
+     }
+
      
      <ProfileTab
           label="Followers"

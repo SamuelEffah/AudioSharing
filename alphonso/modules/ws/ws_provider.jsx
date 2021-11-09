@@ -1,6 +1,6 @@
 import React, {createContext,useMemo,useState, useEffect} from "react"
 import { useTokenStore } from "../../stores/useTokens"
-import {useRouter} from "next/router"
+import router, {useRouter} from "next/router"
 import { Connection } from "./socket"
 
 
@@ -28,14 +28,14 @@ export const WSProvider = ({children})=>{
     //reconnect to server there're tokens
     useEffect(()=>{
         if(!conn && accessToken && refreshToken){
-            setIsConnecting(true)
+           
            Connection(accessToken, refreshToken).then((c)=>{
                 console.log(c.user)   
-            setConn(c)
-               setUser(c.user)
-              
-               setIsConnecting(false)
-           }).catch(err=>{
+                setConn(c)
+                setUser(c.user)
+                setIsConnecting(false)
+                
+            }).catch(err=>{
                clearTokens()
                console.log(accessToken)
                console.log(refreshToken)
@@ -44,8 +44,12 @@ export const WSProvider = ({children})=>{
            })
         
         }
-    }, [conn, isTokens, accessToken, refreshToken]
+    }, [conn, isTokens, accessToken,isConnecting, refreshToken]
     )
+
+    useEffect(()=>{
+        router.prefetch("/discovery")
+    },[])
 
 
     return (

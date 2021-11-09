@@ -1,9 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import Button from "../../ui/button";
-import { PlayFilled } from "../../icons";
+import { PlayFilled, Spinner, Pause, Plus, Edit } from "../../icons";
 import IconButton from "../../ui/icon_button";
+import { useRouter } from "next/router";
 import ControllerOverlay from "../../shared-components/controller_overlay"
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize";
+import { usePodcastStore } from "../../stores/usePodcastStore";
+import axios from "axios"
+import useSWRImmutable from 'swr/immutable'
+import {usePlayerStore} from "./../../stores/usePlayerStore"
+import {WSContext} from "./../ws/ws_provider"
+const fetcher = (url)=> axios.get(url).then((res)=>res.data)
+
+
 const CategoryPill = ({ category }) => {
   return (
     <div
@@ -16,37 +25,88 @@ const CategoryPill = ({ category }) => {
 };
 
 const Episode = ({ episode,className, ...props }) => {
+  const {podcast} = usePodcastStore()
+  const isPlaying = usePlayerStore((s)=> s.episode.id == episode.id && s.isPlaying)
+  const isPause = usePlayerStore((s)=> s.episode.id == episode.id && s.isPause)
+  // const {play, pause,ref } = usePlayerStore()
+
   return (
-    <div className={`flex mb-4 ${className}`}>
+    <div className={`flex w-full mb-4  relative ${className}`}>
       <div
         style={{ width: "60px", height: "60px" }}
         className="bg-primary-100 flex-shrink-0 rounded-xl"
-      />
+      >
+        <img
+              className="w-full h-full bg-primary-100  rounded-l-xl"
+              style={{ objectFit: "cover" }}
+              src={podcast.poster_url}
+              alt="podcast poster"
+            />
+
+      </div>
+      <div 
+      style={{width:"calc(80% - 60px)"}}
+       className="flex justify-between items-center">
+       
       <div className="pl-2.5 pr-1 relative">
-        <p className="pb-1.5">Episode #1 Carl Schmitt on Liberlism pt.1</p>
-        <small className="w-10/12 text-primary-300 ">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Expedita
-          ullam obcaecati alias quas ducimus facere dolore illo consequatur
-          labore nulla placeat cupiditate quibusdam.
+        <p className="pb-1.5">{episode.name}</p>
+        <small className="w-10/12  text-primary-300 ">
+         {episode.description}
         </small>
       </div>
       <div className="">
+
         <IconButton
-          className="w-12 h-12"
-          icon={<PlayFilled width={20} height={20} />}
+        bgColor="#DB0202"
+        isToggleColor = {true}
+          className="w-12 h-12 rounded-full"
+          icon={
+            isPlaying ? (
+          <Pause width={20} height={20} />
+        ) : (
+          <PlayFilled width={20} height={20} />
+        )
+        }
+        
+          onClick={()=> 
+          isPlaying ? console.log("pause") : 
+         console.log("play")
+          }
         />
+      </div>
+
       </div>
     </div>
   );
 };
 
-const PodcastController = ({ name,...props }) => {
+const PodcastController = ({...props }) => {
     const screenSize  = useDetectScreenSize()
+   
+    const router = useRouter()
+    const {clear, podcast} = usePodcastStore()
+    const {name} = router.query
+    const {user} = useContext(WSContext)
+    const {data, error} = useSWRImmutable(`http://localhost:4001/podcast/episodes/21f4ca36-1c3c-4449-a05e-5527c7fbc496`, fetcher)
+
+
   return (
    <ControllerOverlay>
-      <div style={{ width: "96%" }} className="">
-        <h3 className="font-medium text-2xl">House of Exile</h3>
-      </div>
+      <div style={{ width: "96%" }} className="flex items-center">
+        <h3 className="font-medium text-2xl capitalize">{name.replace("-", " ")}</h3>
+       {user && user.id == podcast.creator_id ?(
+
+        <div className="border-b  text-primary-300 cursor-pointer flex items-center justify-center ml-10">
+          <span>
+            <Edit/>
+          </span>
+          <p className="pl-1.5">
+          Edit podcast</p>
+        </div>
+
+       ): null}
+       
+     </div>
       <div style={{ width: "96%" }} className={` relative flex mt-12
         ${screenSize === "mobile" ? 'flex-col items-center' : 'flex-row'}
       
@@ -56,24 +116,29 @@ const PodcastController = ({ name,...props }) => {
           "mobile" ? "120px": "180px"), height: (screenSize === "mobile"? "120px" :"180px" )}}
           className=" bg-primary-100 rounded-xl"
         >
-          <p>image</p>
+             <img
+              className="w-full h-full bg-primary-100  rounded-l-xl"
+              style={{ objectFit: "cover" }}
+              src={podcast.poster_url}
+              alt="podcast poster"
+            />
+            
         </div>
 
         <div style={{ width: screenSize === "mobile" ? "100%" : "calc(100% - 200px)" }} 
-        className="pt-6 pl-4 flex flex-col items-center">
-          <h4 className="text-xl text-semibold">House of Exile</h4>
+        className={`pt-6 pl-4  flex flex-col ${screenSize === "mobile" ? 'items-center': ''}`}>
+          <h4 className="text-xl text-semibold capitalize">{name.replace("-", " ")}</h4>
           <p className={`${screenSize === 'mobile' ? 'w-11/12 pt-1.5 text-center' : 'w-9/12 pt-3'} text-base text-primary-300`}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic dolor
-            cumque provident doloribus distinctio id eos vel in modi possimus
-            animi voluptatum fuga laboriosam unde porro nobis accusamus sint
-            corrupti ipsam culpa reprehenderit, nemo libero. Quos est
-            reprehenderit accusantium officia neque minima dignissimos error,
-            facere quasi numquam quam minus. Consectetur.
+           {podcast.description}
           </p>
 
           <div className="pt-6 flex items-center">
-            <CategoryPill category="LifeStyle" />
-            <CategoryPill category="History" />
+          {podcast.tags.map((t,i)=>{
+            return (
+              <CategoryPill key={i} category={t} />
+            )
+          })}
+           
           </div>
         </div>
       </div>
@@ -83,18 +148,49 @@ const PodcastController = ({ name,...props }) => {
            : "calc(100% - 180px)"), marginLeft: screenSize==="mobile" ? "0px" : "180px" }}
           className="pl-6 relative"
         >
-          <div className="w-full">
+          <div className="w-full flex items-center">
             <p className="text-xl text-semibold">All Episodes</p>
+           
+           {user && user.id == podcast.creator_id ? (
+
+            <button
+            style={{
+              fontSize:'13px',
+              color:"#000",
+              backgroundColor:"#D7DBDC"
+            }}
+             className="
+              flex items-center px-3 py-2 ml-4 text-base font-bold justify-center border-none rounded-full
+            ">
+              <Plus />
+              <span>Add New Episode</span>
+            </button>
+
+
+           ) : null}
           </div>
           <div className="w-full mt-7 relative">
-            <Episode
+          {data && data.episodes ?  (
+            <div>
+            {data.episodes.map((e)=>{
+              return (
+                <Episode
+                episode={e}
+                key= {e.id}
+                
             className={`${screenSize === 'mobile'? 'w-11/12' : 
             'w-9/12' }`}
              />
-            <Episode
-            className={`${screenSize === 'mobile'? 'w-11/12' : 
-            'w-9/12' }`}
-             />
+              )
+            })}
+            </div>
+
+          ) : (
+            <div className="w-full flex items-center justify-center">
+                <Spinner/>
+            </div>
+          )}
+    
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ import Player from "../../ui/player";
 import Search from "../../shared-components/search";
 import UploadModal from "../../shared-components/modal/upload_modal";
 import { WSAuth } from "../ws/ws_auth";
+import EditProfileModal from "../../shared-components/modal/edit_profile_modal";
 
 const DesktopLayout = ({ children, className, ...props }) => {
   const screenSize = useDetectScreenSize();
@@ -58,6 +59,7 @@ const DesktopLayout = ({ children, className, ...props }) => {
       <UploadModal/>
       <DrawerMobile />
       <SearchModal />
+      <EditProfileModal/>
     </div>
          
     </WSAuth>

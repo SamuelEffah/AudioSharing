@@ -17,6 +17,7 @@
     --color-white: #ffffff;
     --color-primary-300: #dddddd;
     --color-accent: #DB0202;
+    --color-accent-hover: #f52d2d;
     --color-accent-200: #BF614C;
     --color-player:#EBEBEB;
     --color-black: #000;
@@ -49,17 +50,14 @@
     background-color: var(--color-primary-200);
     border-radius: 5px;
   }
-/* 
-  #nprogress {
-    position: relative;
-    z-index: 9999999;
-  }
+
+
   
   #nprogress .bar {
-    background: var(--color-accent-hover) !important;
+    background: var(--color-accent) !important;
   }
   
-  #nprogress .peg {
+  /* #nprogress .peg {
     box-shadow: 0 0 10px var(--color-accent-hover),
       0 0 5px var(--color-accent-hover) !important;
   } */
@@ -87,4 +85,11 @@ html {
   margin-left: 300px;
   width: calc(100% - 750px);
   
+}
+
+#previewImage{
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-repeat: no-repeat;
+ 
 }

@@ -108,16 +108,7 @@ const Login = () => {
                  window.location.href = "http://localhost:4001/auth/github";
               }}
             />
-            <ProviderAuth
-              provider="Google"
-              isLoading={false}
-              icon={<Google width={40} height={40} />}
-              onClick={(e) => {
-                e.preventDefault();
-                router.push("/discovery")
-                // window.location.href = "http://localhost:4001/auth/github/";
-              }}
-            />
+          
           </div>
         </div>
       </div>

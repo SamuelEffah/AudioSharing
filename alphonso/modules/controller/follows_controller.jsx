@@ -5,20 +5,22 @@ import {Spinner} from "../../icons"
 import Avatar from "../../ui/avatar"
 import axios from "axios"
 import useSWRImmutable from 'swr/immutable'
+import { useProfileStore } from "../../stores/useProfileStore"
 const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 
 const controllerLabels = ["podcast", "followers", "following"]
 
 
-const FollowItem = ({user})=>{
+const FollowItem = ({user, ...props})=>{
         return (
-            <Link href={`/profile/${user.username}`}>
-            <a>
+           
 
             <div
 
-            className="flex w-full cursor-pointer hover:opacity-80 mb-1 py-3"
-            key={user.username}>
+            className="flex w-full  cursor-pointer hover:opacity-80 mb-1 py-3"
+            key={user.username}
+            {...props}
+            >
 
             <Avatar url={user.profile_url}/>
             <div className="ml-2">
@@ -30,9 +32,7 @@ const FollowItem = ({user})=>{
             </div>
             </div>
 
-            </a>
-
-            </Link>
+            
         )
     }
 
@@ -40,6 +40,7 @@ const FollowItem = ({user})=>{
 
 export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
     const router = useRouter()
+    const {addProfile} = useProfileStore()
     const [isLoading, setIsLoading] = useState(true)
     const {data: followingList, error: followingError} =  useSWRImmutable( `http://localhost:4001/users/${username}/following`, fetcher)
     const {data: followersList, error: followerError} =  useSWRImmutable( `http://localhost:4001/users/${username}/followers`, fetcher)
@@ -47,7 +48,7 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
     let main = null
     if(!followersList && indx == 1 || !followingList && indx == 2) {
         main = (
-            <div>
+            <div className="w-full flex items-center justify-center">
                 <Spinner/>
             </div>
         )
@@ -75,7 +76,12 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
 
                 {followersList.map((f)=>{
                     return (
-                        <FollowItem  key={f.username} user={f}/>
+                        <FollowItem 
+                        onClick={(e)=>{
+                            addProfile(f)
+                            router.push(`/profile/${f.username}`)
+                        }}
+                         key={f.username} user={f}/>
                     )
                 })
 
@@ -91,7 +97,12 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
 
                 {followingList.map((f)=>{
                     return (
-                        <FollowItem  key={f.username} user={f}/>
+                        <FollowItem 
+                         onClick={(e)=>{
+                            addProfile(f)
+                            router.push(`/profile/${f.username}`)
+                        }}
+                         key={f.username} user={f}/>
                     )
                 })
 
@@ -102,7 +113,7 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
     
 
     return (
-        <div className="w-full relative">
+        <div className="w-full relative overflow-y-auto">
            {main}
         </div>
     )

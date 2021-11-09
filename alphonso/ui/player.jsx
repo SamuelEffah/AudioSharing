@@ -1,17 +1,18 @@
-import React, {useCallback, useEffect, useState} from "react"
+import React, {useCallback, useEffect, useState, useRef} from "react"
 import { Next, Pause, Play, PlayFilled, Previous } from "../icons"
 import Avatar from "./avatar"
 
 //mock data 
 import Podcasts from "../data/podcasts"
 import VolumeSlider from "./volume_slider"
+import { usePlayerStore } from "../stores/usePlayerStore"
 
-const PlayerBtn = ({onClick,className,icon,...props})=>{
+const PlayerBtn = ({className,icon,...props})=>{
 
     return (
         <button
         className={`w-12 h-12 mx-4 flex-shrink-0 rounded-full flex items-center justify-center ${className}`}
-        onClick={onClick}
+        
         {...props}
         >
             {icon}
@@ -22,11 +23,9 @@ const PlayerBtn = ({onClick,className,icon,...props})=>{
 
 
 const Player = ({className,...props}) =>{
-
-    const [isPlay, setIsPlay] = useState(true)
-
-    return (
-
+    const {playCurrent,isPlaying ,pause, episode, addRef} = usePlayerStore()
+  
+        return (
         <div
         style={{color:'#000'}}
          className="bg-primary-700 relative p-3 w-11/12 h-56 rounded-xl">
@@ -35,17 +34,25 @@ const Player = ({className,...props}) =>{
                 className="text-md font-semibold"
                 >Current Playing</h4>
             </div>
-         
-            <VolumeSlider/>
+            {/* <audio
+            id="audio_player"
+            ref={audioRef}
+            controls
+        
+            // style={{display: 'none'}}
+             >
+             <source id="audio_source"  type="audio/mpeg"/>
+             </audio> */}
+            <VolumeSlider />
           
             <div className="flex flex-col relative items-center pt-4">
                 <div className="flex w-full">
-                        <Avatar url={Podcasts[0].poster} width={60} height={60}/>
+                        <Avatar url={episode?.poster} width={60} height={60}/>
                         <div className="pl-3">
                         <p 
                         className="text-xl font-bold "
-                        >{Podcasts[0].name}</p>
-                       <small className="text-base">{Podcasts[0].creator}</small> 
+                        >{episode?.name}</p>
+                       <small className="text-base"></small> 
                         </div>
                    
                 </div>
@@ -54,18 +61,33 @@ const Player = ({className,...props}) =>{
                             icon={<Previous width={22} height={22}/>}
                         />
                         
-                        <PlayerBtn
+                        {isPlaying? (
+                            <PlayerBtn
                             className="bg-accent w-16 h-16"
-                            icon={ isPlay ? 
+                            icon={  
                                  <Pause width={22} height={22}/>
-                                 : 
-                                 <PlayFilled width={24} height={24}/>
+                                
                                  }
-                            onClick={(e)=>{
-                                e.preventDefault()
-                                setIsPlay(!isPlay)
+                            onClick={()=>{
+                                console.log("pause")
                             }}
                         />
+
+                        ) : (
+
+                            <PlayerBtn
+                            className="bg-accent w-16 h-16"
+                            icon={ 
+                                 <PlayFilled width={24} height={24}/>
+                                 }
+                            onClick={()=>{
+                                console.log("play")
+                            }}
+                        />
+
+
+                        )}
+                       
                         <PlayerBtn
                             icon={<Next width={22} height={22}/>}
                         />

@@ -12,6 +12,7 @@ const Avatar = ({url, width=50, height=50, optionStyles, ...props})=>{
 
     return (
         <div
+        {...props}
         >
         <img 
      className={`relative rounded-lg`}

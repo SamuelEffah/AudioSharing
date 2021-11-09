@@ -1,5 +1,6 @@
 import React, {useCallback,useState ,useEffect} from "react"
 import { Plus } from "../icons"
+import { usePodcastFormStore } from "../stores/usePodcastFormStore"
 
 const tagsList = [
     {
@@ -24,12 +25,13 @@ const tagsList = [
 ]
 
 const TagPill = ({label,cb,indx,...props}) =>{
-   
+    const {addOrRemoveTag} = usePodcastFormStore()
     const [selected, setSelected] = useState(false)
 
     return (
         <div 
         onClick={(e)=> {
+            addOrRemoveTag(label, !selected)
             setSelected(!selected)
          
             
@@ -55,7 +57,8 @@ const TagPill = ({label,cb,indx,...props}) =>{
 
 const Tags = ({...props})=>{
     const [tagList, setTagsList] = useState([])
-
+    const {tags} = usePodcastFormStore()
+   
  
     return(
         <div className="w-full relative">
@@ -66,7 +69,7 @@ const Tags = ({...props})=>{
             
                return <TagPill  
                key={i} 
-         
+
                indx={i}
                 label={v.label}/>
            })}

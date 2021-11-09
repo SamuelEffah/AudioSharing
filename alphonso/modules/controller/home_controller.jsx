@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize"
 import Banner from "../../ui/banner"
 import HorizontalScroll from "../../ui/horizontal_scroll"
@@ -14,15 +14,19 @@ import ExploreTabs from "../../data/explore_tabs"
 import Users from "../../data/users"
 import Podcasts from "../../data/podcasts"
 import { WSContext } from "../ws/ws_provider"
+import { ExploreController } from "./explore"
   
  const HomeController =()=>{
 
     const screenSize = useDetectScreenSize()
+    const {user} = useContext(WSContext)
+    const [currentIndx, setCurrentIndx] = useState(1)
   
     return (
           <ControllerOverlay>
-          
-        <Banner/>
+          {user && !user.is_creator ? (
+          <Banner/>
+          ) : null}
            <div className="w-full  relative">
            <div className="relative pl-8">
             <h3
@@ -31,19 +35,18 @@ import { WSContext } from "../ws/ws_provider"
             >
               Explore
             </h3>
-            <Tabs data={ExploreTabs} />
+            <Tabs 
+            currentIndx={currentIndx}
+            setCurrentIndx={setCurrentIndx}
+            data={ExploreTabs} />
           </div>
           <div className="flex h-62  w-full">
-            <HorizontalScroll offset={15} itemSize={
-              screenSize === "mobile" ? 150 : 420 
-            }>
-              {Podcasts.map((p, i) => {
-                return <PreviewCard key={p.id} podcast={p} />;
-              })}
-            </HorizontalScroll>
+           <ExploreController
+            indx={currentIndx}
+           />
           </div>
         </div>
-        <div className="mt-8 w-full relative">
+        <div className="mt-14 w-full relative">
            <div className="w-full relative pl-8 mb-6">
              <h3
               className="
@@ -71,7 +74,7 @@ import { WSContext } from "../ws/ws_provider"
           </div>
         </div>
 
-        <div className="mt-8 relative  w-full">
+        <div className="mt-14 relative  w-full">
            <div className="w-full relative pl-8 mb-6">
              <h3
               className="

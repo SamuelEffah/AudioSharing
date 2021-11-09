@@ -12,11 +12,11 @@ import { Discovery, Settings, Sound, Favorite } from "../icons";
     icon: <Favorite width={20} height={20} />,
     to: "/favorites",
   },
-  {
-    label: "Settings",
-    icon: <Settings width={20} height={20} />,
-    to: "/settings",
-  },
+  // {
+  //   label: "Settings",
+  //   icon: <Settings width={20} height={20} />,
+  //   to: "/settings",
+  // },
 ];
 
 

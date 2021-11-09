@@ -7,6 +7,7 @@ const DiscoverCategory = ({ ...props }) => {
   const router = useRouter();
   const { category } = router.query;
 
+
   return (
     <>
       <DesktopLayout>

@@ -26,7 +26,7 @@ const item = {
   hidden: { opacity: 0 },
 };
 
-const VolumeSlider = ({ isMute = false, className, ...props }) => {
+const VolumeSlider = ({ isMute = false,ref, className, ...props }) => {
   const [currentIcon, setCurrentIcon] = useState(
     isMute ? (
       <VolumeMute width={22} height={22} />
@@ -35,7 +35,7 @@ const VolumeSlider = ({ isMute = false, className, ...props }) => {
     )
   );
 
-  const [volumeLevel, setVolumeLevel] = useState(50);
+  const [volumeLevel, setVolumeLevel] = useState(-100);
   const [isAnimateHeight, setIsAnimateHeight] = useState(false);
 
   const [isVolumeBtn, setIsVolumeBtn] = useState(isMute ? isMute : false);
@@ -72,8 +72,8 @@ const VolumeSlider = ({ isMute = false, className, ...props }) => {
           <Slider
             reverse={true}
             vertical={true}
-            min={0}
-            max={100}
+            min={-100}
+            max={0}
             value={volumeLevel}
             railStyle={{ backgroundColor: "var(--color-accent)" }}
             trackStyle={{ backgroundColor: "#BFBFBF" }}
@@ -83,6 +83,11 @@ const VolumeSlider = ({ isMute = false, className, ...props }) => {
             }}
             onChange={(v) => {
               setVolumeLevel(v);
+
+              // console.log("current volume ", v)
+              // console.log("current volume ", Math.abs(v/100))
+            //  let elem = document.getElementById("audio_player")
+            //  elem.volume  = Math.abs(v/100)
             }}
           />
         </motion.div>

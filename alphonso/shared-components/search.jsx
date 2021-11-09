@@ -4,18 +4,23 @@ import Link from "next/link"
 import {useDetectOutside} from "./../shared-hooks/useDetectOutside"
 import {Search as SearchIcon } from "../icons"
 import Avatar from "../ui/avatar";
+import router from "next/router"
+import { useProfileStore } from "../stores/useProfileStore"
 
 
 
 const SearchItem = ({ item }) => {
+  const {addProfile} = useProfileStore()
     return (
-      <Link href={`/profile/${item.username}`}>
-      <a >
+     
 
         <div
-  
+        onClick={(e)=>{
+          addProfile(item)
+          router.push(`/profile/${item.username}`)
+        }}
         key={item?.id}
-        className="mb-2.5 w-full flex pl-2"
+        className="mb-2.5 cursor-pointer w-full flex pl-2"
       >
         <Avatar url={item?.profile_url} />
         <div className="cursor-default pl-2">
@@ -27,14 +32,13 @@ const SearchItem = ({ item }) => {
       </div>
 
 
-      </a>
-      </Link>
      
     );
   };
 
 
 const SearchResults = ({results})=>{
+
     return (
         <div
         style={{backgroundColor: "#111314",

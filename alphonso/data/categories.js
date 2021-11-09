@@ -9,7 +9,7 @@ from "../icons"
 
 const Categories = [
     {
-      name: "Lifestyle & Health",
+      name: "lifestyle & health",
       icon: <HeartHalfFilled width={22} height={22} />,
       to: "/discovery/lifestyle-health",
       color: "#0088FE",
@@ -17,15 +17,15 @@ const Categories = [
     },
   
     {
-      name: "Arts & Entertainments",
+      name: "art & entertainment",
       icon: <PaintBrush width={22} height={22} />,
-      to: "/discovery/arts-entertainments",
+      to: "/discovery/art-entertainment",
       color: "#00C49F",
       size: 300
 
     },
     {
-      name: "News & Politics",
+      name: "news & politics",
       icon: <NewsPaper width={26} height={26} />,
       to: "/discovery/news-politics",
       color:"#FFBB28",
@@ -33,7 +33,7 @@ const Categories = [
 
     },
     {
-      name: "Sports",
+      name: "sports",
       icon: <Football width={26} height={26} />,
       to: "/discovery/sports",
       color: "#FF8042",
@@ -41,7 +41,7 @@ const Categories = [
 
     },
     {
-      name: "Business & Technology",
+      name: "business & technology",
       icon: <PersonAtCounter width={26} height={26} />,
       to: "/discovery/business-technology",
       color: "#fa617d",

@@ -48,7 +48,8 @@ const Users =[{
   episodes: 85,
   username: "aeyton7",
   profile_url: "https://images.pexels.com/photos/3220360/pexels-photo-3220360.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-}, {  id: "1058de0-ee15-4ea4-a28f-6938559cf803",
+}, 
+{  id: "1058de0-ee15-4ea4-a28f-6938559cf803",
   full_name: "Reynolds Berrey",
   episodes: 13,
   username: "rberrey8",
