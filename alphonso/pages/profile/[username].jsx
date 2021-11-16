@@ -262,20 +262,7 @@ const Profile = ({ ...props }) => {
 
      <div className="flex justify-between  w-8/12 mt-10">
      
-     {profile && user && profile.is_creator && user.id == profile.id ? null : (
 
-      <ProfileTab
-          label="Podcast"
-          size={profile?.num_of_podcasts}
-          isActive={currentTabIndx == 0 ? true : false}
-          onClick={(e) => {
-            e.preventDefault()
-            setCurrentTabIndx(0);
-          }}
-        />
-     )
-     
-     }
 
      
      <ProfileTab

@@ -72,7 +72,7 @@ const DefaultSideBar = ({user,...props}) => {
               return <NavItem key={i} to={v.to} label={v.label} icon={v.icon} />
             {/* return <NavItem key={i} to={v.to} label={v.label} icon={v.icon} />; */}
           })}
-          {user && user.is_creator ? (
+         
             <NavItem
                  key={"podcasts_nav"}
                  label="My Podcasts"
@@ -80,7 +80,7 @@ const DefaultSideBar = ({user,...props}) => {
                  to="/my-podcasts"
                />
 
-          ) : null}
+          ) 
           
           {user && user.is_admin ? (
             <NavItem
@@ -151,6 +151,27 @@ const TabletSideBar = ({user,...props}) => {
               />
             );
           })}
+
+            <NavItem
+                isIconBtn={true}
+                 key={"podcasts_nav"}
+                 label="My Podcasts"
+                 icon={<Sound width={21} height={21} />}
+                 to="/my-podcasts"
+               />
+
+          ) 
+          
+          {user && user.is_admin ? (
+            <NavItem
+                isIconBtn={true}
+                 key = {"admin_panel"}
+                 label="Admin Panel"
+                 icon={<Admin width={21} height={21} />}
+                 to="/admin"
+               />
+
+          ) : null}
         </div>
 
         <div className="flex justify-center w-full mt-20">
