@@ -20,8 +20,9 @@ config :avocado,
     "afion934hnifainiuheiankjsgn945njkabnjkngkjbnajkgiu4503bnfkag",
   github_id: "47938002",
   access_token_secret: "4ajnpOe4irknNjdrek9ir3mfFhe",
-  refresh_token_secret: "ok54J34PKekjiwnbpIioqnps5Oebn"
-
+  refresh_token_secret: "ok54J34PKekjiwnbpIioqnps5Oebn",
+  include_erts: true,
+  http: [port: {:system, "PORT"}]
 
 
 config :joken,

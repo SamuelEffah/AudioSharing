@@ -1,47 +1,26 @@
-# STEP 1 - BUILD RELEASE 
-FROM hexpm/elixir:1.11.3-erlang-23.2.7-alpine-3.13.2 AS build
+FROM elixir:alpine
+ARG app_name=avocado
+ARG build_env=prod
+ENV MIX_ENV=${build_env} TERM=xterm
+WORKDIR /opt/app
+RUN apk update \
+    && apk --no-cache --update  \
+    && mix local.rebar --force \
+    && mix local.hex --force
+COPY . .
+RUN mix do deps.get, compile
 
-# Install build dependencies
-RUN apk update && \
-    apk upgrade --no-cache && \
-    apk add --no-cache \
-    git \
-    build-base \
-    nodejs-current \
-    nodejs-npm \ 
-    python3 && \ 
-    mix local.rebar --force && \
-    mix local.hex --force
+RUN mix release ${app_name} \
+    && mv _build/${build_env}/rel/${app_name} /opt/release \
+    && mv /opt/release/bin/${app_name} /opt/release/bin/start_server
 
-ENV PORT=8080 MIX_ENV=prod REPLACE_OS_VARS=true
-WORKDIR /app
-
-# Install elixir package dependencies
-COPY mix.exs /app/mix.exs
-COPY mix.lock /app/mix.lock
-RUN mix do deps.get --only $MIX_ENV, deps.compile
-
-# copy config, priv and release and application directories
-COPY config /app/config
-COPY priv /app/priv
-COPY lib /app/lib
-
-# compile app and create release
-RUN mix do compile, release
-
-####################################################################################################
-# STEP 2 - FINAL
-FROM alpine:3.13.2 as app
-RUN apk add --no-cache openssl ncurses-libs
-
-WORKDIR /app
-
-RUN chown nobody:nobody /app
-
-USER nobody:nobody
-
-COPY --from=build --chown=nobody:nobody /app/_build/prod/rel/avocado ./
-
-ENV HOME=/app
-
-CMD bin/avocado eval "Avocado.ReleaseTasks.migrate" && bin/avocado start
+FROM alpine:latest
+ARG project_id=podcastcapstone
+RUN apk update \
+    && apk --no-cache --update add bash ca-certificates openssl-dev \
+    && mkdir -p /usr/local/bin 
+ENV PORT=8080 GCLOUD_PROJECT_ID=${project_id} REPLACE_OS_VARS=true
+EXPOSE ${PORT}
+WORKDIR /opt/app
+COPY --from=0 /opt/release .
+CMD exec /opt/app/bin/start_server start
