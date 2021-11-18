@@ -11,8 +11,9 @@ def start(_typ, _args) do
       scheme: :http,
       plug: Gwen,
       options: [
-        port: 4001,
-        dispatch: dispatch()
+        port: String.to_integer(System.get_env("PORT") || "4001"),
+        dispatch: dispatch(),
+        protocol_options: [idle_timeout: :infinity]
       ]
     )
   ]
