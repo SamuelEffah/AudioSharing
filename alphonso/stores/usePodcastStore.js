@@ -6,11 +6,15 @@ import { persist } from "zustand/middleware"
 export const usePodcastStore = create(
   combine(
     {
-        podcast: {}
+        podcast: {},
+        episodes: []
     },
     (set) => ({
         addPodcast: (p) =>set({
             podcast: p
+        }),
+        addEpisodes: (e) => set({
+          episodes: e
         }),
         clear: ()=>set({
             podcast:{}

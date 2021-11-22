@@ -93,13 +93,28 @@ const MobilePreviewCard = ({podcast,marginX = 0,...props}) => {
 };
 
 const PreviewCard = ({podcast,className, isOwner=false,  marginX = 0, ...props }) => {
-  const isPlaying = usePlayerStore((s)=> s.currentEpisodeId == podcast.id && s.isPlaying)
-  const isPause = usePlayerStore((s)=> s.currentEpisodeId == podcast.id && s.isPause)
-  const {play, pause, episode} = usePlayerStore()
+  const isPlaying = usePlayerStore((s)=> s.episode.id == podcast.id && s.isPlaying)
+  const isPause = usePlayerStore((s)=> s.episode.id == podcast.id && s.isPause)
+  const {play, pause, playCurrent,episode, ref} = usePlayerStore()
   const {addPodcast} = usePodcastStore()
   
- 
+  
   const screenSize = useDetectScreenSize();
+  
+  const handleMedia= ()=>{
+    if(isPlaying){
+      ref.current.pause()
+      pause()
+    }
+    if(isPause){
+      ref.current.play()
+      playCurrent()
+    }
+    if(!isPlaying && !isPause){
+      play(podcast)
+    }
+  }
+  
   return (
     <>
       {screenSize === "mobile" ? (
@@ -185,8 +200,7 @@ const PreviewCard = ({podcast,className, isOwner=false,  marginX = 0, ...props }
            
                 isPlaying={isPlaying}
                 isPause={isPause}
-                onClick={()=> isPlaying? pause() :play(podcast)}
-
+                onClick={handleMedia}
                   />
               </div>
             </div>

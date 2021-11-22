@@ -3,6 +3,7 @@ import { VolumeHigh, VolumeMedium, VolumeMute } from "./../icons";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
+import { usePlayerStore } from "../stores/usePlayerStore";
 
 const variants = {
   visible: {
@@ -26,7 +27,7 @@ const item = {
   hidden: { opacity: 0 },
 };
 
-const VolumeSlider = ({ isMute = false,ref, className, ...props }) => {
+const VolumeSlider = ({ isMute = false, className, ...props }) => {
   const [currentIcon, setCurrentIcon] = useState(
     isMute ? (
       <VolumeMute width={22} height={22} />
@@ -37,9 +38,8 @@ const VolumeSlider = ({ isMute = false,ref, className, ...props }) => {
 
   const [volumeLevel, setVolumeLevel] = useState(-100);
   const [isAnimateHeight, setIsAnimateHeight] = useState(false);
-
   const [isVolumeBtn, setIsVolumeBtn] = useState(isMute ? isMute : false);
-
+  const {ref} = usePlayerStore()
   useEffect(() => {
     if (isVolumeBtn) {
       setCurrentIcon(<VolumeMute width={21} height={21} />);
@@ -83,11 +83,11 @@ const VolumeSlider = ({ isMute = false,ref, className, ...props }) => {
             }}
             onChange={(v) => {
               setVolumeLevel(v);
+              if(ref.current){
+             let elem = document.getElementById("audio_player")
+             elem.volume  = Math.abs(v/100)
 
-              // console.log("current volume ", v)
-              // console.log("current volume ", Math.abs(v/100))
-            //  let elem = document.getElementById("audio_player")
-            //  elem.volume  = Math.abs(v/100)
+              }
             }}
           />
         </motion.div>

@@ -85,7 +85,7 @@ const FormModal = ({ ...props }) => {
             console.log(res.data)
             if(res.data.status == "successful"){
               updatePodcast({poster_url: res.data.file_url, creator_id: user.id})
-       
+              
              
             }
         }).catch((e)=>{

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Button from "../../ui/button";
 import { PlayFilled, Spinner, Pause, Plus, Edit } from "../../icons";
 import IconButton from "../../ui/icon_button";
@@ -10,6 +10,7 @@ import axios from "axios"
 import useSWRImmutable from 'swr/immutable'
 import {usePlayerStore} from "./../../stores/usePlayerStore"
 import {WSContext} from "./../ws/ws_provider"
+import {openUploadModal, useModalStore} from "../../shared-components/modal/upload_modal"
 const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 
 
@@ -28,8 +29,34 @@ const Episode = ({ episode,className, ...props }) => {
   const {podcast} = usePodcastStore()
   const isPlaying = usePlayerStore((s)=> s.episode.id == episode.id && s.isPlaying)
   const isPause = usePlayerStore((s)=> s.episode.id == episode.id && s.isPause)
-  // const {play, pause,ref } = usePlayerStore()
-
+  const {play, pause,ref, playCurrent } = usePlayerStore()
+  
+  const handleMedia= ()=>{
+    if(isPlaying){
+      ref.current.pause()
+      pause()
+    }
+    if(isPause){
+      ref.current.play()
+      playCurrent()
+    }
+    if(!isPlaying && !isPause){
+      let data = {
+        description: episode.description,
+        episodes: episode.file_name,
+        id: episode.id,
+        inserted_at: episode.inserted_at,
+        name: episode.name,
+        num_of_listeners: episode.num_of_listeners,
+        podcast_id:podcast.id,
+        poster_url: podcast.poster_url,
+        creator_id: podcast.creator_id,
+        creator_name: podcast.creator_name,
+      }
+      play(data)
+    }
+  }
+  
   return (
     <div className={`flex w-full mb-4  relative ${className}`}>
       <div
@@ -68,10 +95,7 @@ const Episode = ({ episode,className, ...props }) => {
         )
         }
         
-          onClick={()=> 
-          isPlaying ? console.log("pause") : 
-         console.log("play")
-          }
+          onClick={handleMedia}
         />
       </div>
 
@@ -82,14 +106,29 @@ const Episode = ({ episode,className, ...props }) => {
 
 const PodcastController = ({...props }) => {
     const screenSize  = useDetectScreenSize()
-   
+    const {setType} = useModalStore()
     const router = useRouter()
-    const {clear, podcast} = usePodcastStore()
+    const {clear, podcast, episodes} = usePodcastStore()
     const {name} = router.query
     const {user} = useContext(WSContext)
-    const {data, error} = useSWRImmutable(`http://localhost:4001/podcast/episodes/21f4ca36-1c3c-4449-a05e-5527c7fbc496`, fetcher)
-
-
+    const {data, error} = useSWRImmutable(`http://localhost:4001/podcast/episodes/${podcast.id}`, fetcher)
+    const [episodesList, setEpisodesList] = useState(episodes || data)
+   
+  useEffect(()=>{
+      if(data && episodes.length == 0){
+        setEpisodesList(data)
+      }
+      if(data && episodes.length > 0){
+        setEpisodesList(episodes)
+      }
+  },[data, episodes])
+  useEffect(()=>{
+    if(episodes){
+      setEpisodesList(episodes)
+      
+    }
+  },[episodes])
+   
   return (
    <ControllerOverlay>
       <div style={{ width: "96%" }} className="flex items-center">
@@ -140,6 +179,9 @@ const PodcastController = ({...props }) => {
           })}
            
           </div>
+          <div>
+            <p style={{fontSize:'12px'}} className="mt-4 text-primary-300">{podcast?.creator_name}</p>
+          </div>
         </div>
       </div>
       <div style={{ width: "96%" }} className=" relative mt-10">
@@ -154,6 +196,10 @@ const PodcastController = ({...props }) => {
            {user && user.id == podcast.creator_id ? (
 
             <button
+            onClick={()=> {
+              setType('episode')
+              openUploadModal(true)
+              }}
             style={{
               fontSize:'13px',
               color:"#000",
@@ -170,9 +216,9 @@ const PodcastController = ({...props }) => {
            ) : null}
           </div>
           <div className="w-full mt-7 relative">
-          {data && data.episodes ?  (
+          {episodesList && episodesList.episodes ?  (
             <div>
-            {data.episodes.map((e)=>{
+            {episodesList.episodes.map((e)=>{
               return (
                 <Episode
                 episode={e}

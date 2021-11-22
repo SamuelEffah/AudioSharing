@@ -13,7 +13,7 @@ import React from "react"
         rounded-full
         flex items-center justify-center 
         ${className ? className  : 'w-10/12 bg-accent text-lg font-semibold'}
-        ${isLoading ? 'cursor-not-allowed opacity-70' : 'opacity-100'}
+        ${isLoading ? 'cursor-not-allowed opacity-40' : 'opacity-100'}
         `}
         
         {...props}

@@ -5,7 +5,7 @@ import { useUploadAudioStore } from "../../stores/useUploadAudioStore"
 
 
 export const UploadFile = ({...props})=>{
-    const {setCurrentState} = useModalStore()
+    const {setCurrentState, type} = useModalStore()
     const {addFile} = useUploadAudioStore()
     const fileInputRef = useRef(null)
    
@@ -25,7 +25,7 @@ const handleChange = (e) =>{
 
 
 
-    setCurrentState(1)
+    setCurrentState(type == 'podcast'? 1 : 2)
 
 }
     return(

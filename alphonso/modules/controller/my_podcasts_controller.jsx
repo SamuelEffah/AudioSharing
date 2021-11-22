@@ -13,7 +13,7 @@ const MyPodcastsController = ({header,...props }) => {
     const screenSize  = useDetectScreenSize()
     const {user} = useContext(WSContext)
     const {data, error} = useSWRImmutable(`http://localhost:4001/podcast/${user.id}`, fetcher)
-    console.log(data)
+
 
     let main 
 

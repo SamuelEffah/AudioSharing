@@ -67,6 +67,7 @@ export const ExploreController = ({ indx = 1, ...props }) => {
   }
 
   if (topPodcastList && topPodcastList.podcasts.length > 0 && indx == 1) {
+      
     main = (
       <div className=" w-full">
         <HorizontalScroll

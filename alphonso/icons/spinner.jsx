@@ -1,10 +1,10 @@
 import React from "react"
 
 
-export const Spinner = ()=>{
+export const Spinner = ({className})=>{
 
     return (
-        <svg className="animate-spin  h-8 w-8" 
+        <svg className={`animate-spin ${className ? className: 'h-8 w-8'} `} 
 
         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="#DB0202" strokeWidth="4"></circle>

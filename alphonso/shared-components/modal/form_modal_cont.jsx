@@ -12,17 +12,65 @@ import axios from 'axios'
 import { usePodcastFormStore } from "../../stores/usePodcastFormStore";
 import {useTokenStore} from "../../stores/useTokens"
 import { openUploadModal,useModalStore } from "./upload_modal";
+import { usePodcastStore } from "../../stores/usePodcastStore";
+import { Spinner } from "../../icons";
 
 const FormModalCont = ({ ...props }) => {
-const {setCurrentState} = useModalStore()
-  const {status,} = useUploadAudioStore()
 const {accessToken, refreshToken} = useTokenStore()
+const [isLoading, setIsLoading] = useState(true)
   const [episodeName, setEpisodeName]  = useState("")
   const [episodeDescription, setEpisodeDescription] = useState("")
     const[isPublish, setIsPublish] = useState(false) 
+    const {podcast,addEpisodes, episodes} = usePodcastStore()
   const {user, setUser} = useContext(WSContext)
+  const {file, status, updateStatus} = useUploadAudioStore()
+  const {type, setCurrentState} = useModalStore()
   const {updatePodcast, podcastDetails,clear} = usePodcastFormStore()
- 
+  if (file && status == null && type == 'episode'){
+      let userData = {
+            "user_id": user.id,
+            "type": "audio"
+        }
+        updateStatus("Uploading file...")
+        let formData = new FormData()
+        formData.append('file', file)
+        formData.append('data', JSON.stringify(userData))
+        setIsLoading(true)
+        axios({
+            method: "POST",
+            url: "http://localhost:5000/api/v1/audio",
+            data: formData,
+            headers: {"Content-Type": "multipart/form-data"}
+        }).then((res)=>{
+            console.log(res.data)
+            if(res.data.status == "successful"){
+              updatePodcast({file_name: res.data.file_url})
+              updateStatus("Upload Completed")
+          
+            }
+        }).catch((e)=>{
+            console.error(e)
+        })
+  }
+
+  // }
+
+
+  useEffect(()=>{
+    if(type=="episode" && podcastDetails && podcastDetails.file_name){
+      setIsLoading(false)
+    }
+    if(type == "podcast"){
+      setIsLoading(false)
+    }
+  },[podcastDetails,type])
+
+
+  // useEffect(()=>{
+  //   if(isPublish){
+  //     console.log(podcastDetails)
+  //   }
+  // },[isPublish])
 
   useEffect(()=>{
     if(isPublish){
@@ -30,20 +78,39 @@ const {accessToken, refreshToken} = useTokenStore()
 
      
         let ws = new WebSocket("ws://localhost:4001/socket")
-        let data = {
-            op: "create_podcast",
-            podcast: podcastDetails,
+        let data = {}
+        if(type == "podcast"){
+          data = {
+              op: "create_podcast",
+              podcast: podcastDetails,
+              access_token: accessToken,
+              refresh_token: refreshToken,
+          }
+          
+        }
+        else{
+          data = {
+            op: "upload_episode",
+            episode: podcastDetails,
             access_token: accessToken,
             refresh_token: refreshToken,
         }
+        }
         ws.onopen=()=>{
+          
         ws.send(JSON.stringify(data))
         }
         ws.onmessage=(e)=>{
       if(e.data){
+        if(type == "episode"){
+         
+          addEpisodes(JSON.parse(e.data))
+          openUploadModal(false)
+          clear()
+          setCurrentState(0)
+        } 
        
-       
-        if(user && user.is_creator){
+        if(user && user.is_creator && type == "podcast"){
           
          openUploadModal(false)
          clear()
@@ -51,7 +118,14 @@ const {accessToken, refreshToken} = useTokenStore()
        }
        else{
          setCurrentState(3)
-         setUser(JSON.parse(e.data))
+       if(type == "podcast"){
+         setUser(JSON.parse(e.data))  
+      }
+      if(type == "episode"){
+        addEpisodes(JSON.parse(e.data))
+      }
+         
+        
        }
       }
     }
@@ -64,12 +138,23 @@ const {accessToken, refreshToken} = useTokenStore()
   const handleSubmit=(e)=>{
     e.preventDefault()
     if(episodeName && episodeDescription){
-      let podcastInfo = {
+    let podcastInfo = {}
+      if(type == "episode"){
+       podcastInfo = {
+          name:episodeName,
+          description: episodeDescription,
+         
+        }
+
+      }
+      else {
+        podcastInfo = {
         episodeName,
         episodeDescription,
-       
+         
+        }
       }
-      updatePodcast(podcastInfo)
+      updatePodcast({...podcastInfo, podcast_id: podcast.id})
       setIsPublish(true)
     }
 
@@ -120,14 +205,24 @@ const {accessToken, refreshToken} = useTokenStore()
         className="flex mt-8"
         >
        <div className="w-full flex justify-end">
-   ]
+   
            <Button
-           
+                isLoading={isLoading}
                className="w-32 bg-accent"
                label="Publish"
                onClick ={handleSubmit}
            />
        </div>
+        </div>
+        <div>
+        {
+          type == "episode" ? (      <p className="text-sm flex items-center " style={{ color: "#fad487" }}>{status}
+        
+        {isLoading ? <Spinner className="w-4 h-4 ml-2.5"/> : null }
+    
+      </p>) : null
+        }
+  
         </div>
    
       </div>

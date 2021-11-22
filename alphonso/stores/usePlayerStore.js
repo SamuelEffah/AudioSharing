@@ -8,13 +8,13 @@ export const usePlayerStore = create(
     {
       episode:{
         description: "",
-        file_name: "",
+        episodes: "",
         id: "",
         inserted_at: "",
-        name: "Mars Journey",
+        name: "",
         num_of_listeners: 0,
         podcast_id: "",
-        poster: ""
+        poster_url: ""
 
       },
       ref: null,
@@ -23,8 +23,12 @@ export const usePlayerStore = create(
       isLoading: false,
     },
     (set) => ({
-        play: (episode) =>set({
-            episode:{...episode},
+        play: (data) =>set({
+            episode:{
+              ...data,
+              episodes: 'http://localhost:5000/api/v1/audio/?fl='+data.episodes
+            
+            },
             isPlaying: true,
             isPause: false,
             isLoading: false

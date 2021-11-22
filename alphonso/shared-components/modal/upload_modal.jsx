@@ -17,11 +17,15 @@ export const useModalStore = create(
     combine(
       {
       currentState:0,
+      type:'podcast'
       },
       (set) => ({
         setCurrentState: (state) => set({ currentState: state }),
         resetFormState: ()=> set({
           currentState: 0
+        }),
+        setType:(type)=> set({
+          type: type
         }),
         set,
       })
@@ -51,13 +55,13 @@ const useUploadModalStore= create(
 
 
 const UploadModal = ({...props})=>{
-    const {currentState} = useModalStore()
+    const {currentState, type} = useModalStore()
     const {isOpen, close} = useUploadModalStore()
     const {file,status,updateStatus} = useUploadAudioStore()
     const {updatePodcast} = usePodcastFormStore()
     const {user} = useContext(WSContext)
     
-    if(file && status == null){
+    if(file && status == null && type=="podcast" ){
       let userData = {
             "user_id": user.id,
             "type": "audio"
