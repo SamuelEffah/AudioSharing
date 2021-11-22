@@ -33,7 +33,7 @@ defmodule Hass.Query.Episode do
     |> where([e], e.podcast_id == ^podcast_id)
     |> order_by([e], e.inserted_at)
     |> limit([], 10)
-    |> select([e], {e.file_name, e.name, e.id, e.media_type, e.description})
+    |> select([e], {e.file_name, e.name, e.id, e.description})
     |> Repo.all()
   end
 

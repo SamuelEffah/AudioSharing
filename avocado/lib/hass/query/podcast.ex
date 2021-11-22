@@ -3,6 +3,7 @@ defmodule Hass.Query.Podcast do
   alias Hass.Repo
   alias Hass.Query.Episode
   alias Hass.Schema.Episode
+  alias Hass.Schema.User, as: UserSchema
   alias Hass.Query.User
 
   alias Hass.Schema.Podcast
@@ -16,11 +17,8 @@ defmodule Hass.Query.Podcast do
   def get_podcasts_by_user_id(user_id) do
     query =
       from p in Podcast,
-      join: e in Episode,
-      on: p.id == e.podcast_id,
-      group_by: p.id,
       where: p.creator_id == ^user_id,
-      select: %{ p | num_of_eps: count(e.id)},
+      select: p,
       limit: 10,
       order_by: [desc: p.inserted_at]
    Repo.all(query)
@@ -33,6 +31,7 @@ defmodule Hass.Query.Podcast do
     |> Repo.one()
   end
 
+  @spec get_latest_podcasts :: any
   def get_latest_podcasts() do
     query =
       from p in Podcast,
@@ -52,16 +51,20 @@ defmodule Hass.Query.Podcast do
       from p in Podcast,
       join: e in Episode,
       on: p.id == e.podcast_id,
-      group_by: p.id,
+      join: u in UserSchema,
+      on: p.creator_id == u.id,
+      group_by: [p.id, e.file_name, u.id],
       where: p.num_of_listeners > ^num_of_listeners,
-      select: %{ p | num_of_eps: count(e.id)},
+      select: %{ p | num_of_eps: count(e.id), creator_name: u.fullname ,episodes: e.file_name},
       limit: 10,
       order_by: [desc: p.inserted_at]
+
    Repo.all(query)
 
   end
 
 
+  @spec get_podcast_by_filter(any) :: any
   def get_podcast_by_filter(filter) do
     query =
       from p in Podcast,
@@ -113,6 +116,7 @@ defmodule Hass.Query.Podcast do
   end
 
 
+  @spec get_podcast_episodes(any) :: any
   def get_podcast_episodes(id) do
     query =
       from p in Podcast,

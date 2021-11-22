@@ -3,6 +3,7 @@ defmodule Gwen.SocketHandler do
 
   alias Avocado.Utils.Auth
   alias Hass.Query.User
+  alias Hass.Query.Episode
   alias Hass.Query.Podcast
   alias Avocado.UserSession
 
@@ -120,6 +121,16 @@ defmodule Gwen.SocketHandler do
               #   is_admin:  user_cached_updated.is_admin,
               # }
               {:reply, {:text, Jason.encode!(user_creator)}, false}
+
+            %{"op"=>"upload_episode"} ->
+              data = message["episode"]
+              Logger.info("episode new #{inspect(data)}")
+              d = %{status: "successful"}
+              add_episode = Episode.create_episode(data)
+              all_episodes = Podcast.get_podcast_episodes(data["podcast_id"])
+
+              {:reply, {:text, Jason.encode!(%{episodes: all_episodes})}, false}
+
 
       end
 
