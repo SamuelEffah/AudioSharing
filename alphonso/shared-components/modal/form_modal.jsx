@@ -4,29 +4,63 @@ import { combine } from "zustand/middleware";
 import { Camera } from "../../icons/camera_icon";
 import { WSContext } from "../../modules/ws/ws_provider";
 import { useUploadAudioStore } from "../../stores/useUploadAudioStore";
+import {usePodcastStore} from "../../stores/usePodcastStore"
 import Button from "../../ui/button";
 import { Modal } from "../../ui/modal";
 import Tags from "../../ui/tags";
 import { InputField } from "../input_field";
 import axios from 'axios'
 import { usePodcastFormStore } from "../../stores/usePodcastFormStore";
-import { useModalStore } from "./upload_modal";
+import { openUploadModal, useModalStore } from "./upload_modal";
+import { set } from "nprogress";
 
 
 const FormModal = ({ ...props }) => {
-  const {setCurrentState} = useModalStore()
+  const {setCurrentState, type} = useModalStore()
   const {status} = useUploadAudioStore()
+  const {podcast,addPodcast} = usePodcastStore()
   const [name, setName]  = useState("")
   const [description, setDescription] = useState("")
   const [subtitle, setSubtitle] = useState("")
   const fileUploadRef = useRef(null)
   const [previewFile,setPreviewFile] = useState(null)
+  const [isEditPodcast, setIsEditPodcast] = useState(false)
   const {user} = useContext(WSContext)
   const {updatePodcast, podcastDetails} = usePodcastFormStore()
+  useEffect(()=>{
+      if(typeof window !== 'undefined' && type == "edit" && podcast){
+        let prevElem = document.getElementById("previewImage")
+        prevElem.style.backgroundImage = `url(${podcast.poster_url})`
+        setName(podcast.name)
+        setDescription(podcast.description)
+        setSubtitle(podcast.subtitle)
+       
+  
+      }
+     
+  },[type,podcast])
+
+  useEffect(()=>{
+    if(type == "edit" && podcastDetails && isEditPodcast){
+     const sendUpdate = async()=>{
+       await axios.post("http://localhost:4001/podcast/edit",{data:podcastDetails})
+       .then((e)=>{
+         if(e.data && e.data.updated){
+           addPodcast(e.data.updated)
+           setCurrentState(0)
+           openUploadModal(false)
+         }
+        //  addPodcast(e.data)
+        // console.log(e.data)
+       })
+     }
+     sendUpdate()
+    }
+  },[isEditPodcast,podcastDetails, type])
+
 
   useEffect(()=>{
     let prevElem 
-    console.log("use ")
     if(typeof window !== 'undefined'){
       prevElem =document.getElementById("previewImage")
       if(previewFile){
@@ -43,19 +77,33 @@ const FormModal = ({ ...props }) => {
 
   const handleNext=(e)=>{
     e.preventDefault()
+    let podcastInfo = {}
     if(name && description || subtitle){
-      let podcastInfo = {
+      podcastInfo = {
         name,
         description,
         subtitle
       }
+      // console.log("m ", m)
+      if(type == "edit"){
+        let m = {...podcast, ...podcastInfo}
+        podcastInfo = m
+      }
+      // console.log("prev podc ", podcast)
       updatePodcast(podcastInfo)
-      setCurrentState(2)
+  
+    
+      if(type == "edit"){
+        setIsEditPodcast(true)
+        
+
+      }
+      else{
+        setCurrentState(2)
+      }
     }
 
-    else{
-      console.log("some data missing")
-    }
+   
   }
 
   const handleUpload = (e)=>{
@@ -170,7 +218,7 @@ const FormModal = ({ ...props }) => {
             onChange={e=>setDescription(e.target.value)}
              textarea={true} />
           </form>
-          <Tags/>
+          <Tags isEdit={type == "edit" ? true : false} tagsList={podcast.tags}/>
         </div>
         <div
         className="flex  justify-between mt-8"
@@ -186,8 +234,8 @@ const FormModal = ({ ...props }) => {
        <div className="">
            <Button
            
-               className="w-32 bg-accent"
-               label="Next"
+               className={type =="edit" ?"w-44 bg-accent" :"w-32 bg-accent"}
+               label={ type == "edit" ? "Save Changes" : "Next"}
                onClick ={handleNext}
            />
        </div>

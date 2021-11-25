@@ -1,6 +1,6 @@
 import React, {useContext} from "react";
 import axios from "axios"
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import ControllerOverlay from "../../shared-components/controller_overlay"
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize";
 import {WSContext} from "./../ws/ws_provider"
@@ -12,7 +12,7 @@ const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 const MyPodcastsController = ({header,...props }) => {
     const screenSize  = useDetectScreenSize()
     const {user} = useContext(WSContext)
-    const {data, error} = useSWRImmutable(`http://localhost:4001/podcast/${user.id}`, fetcher)
+    const {data, error} = useSWR(`http://localhost:4001/podcast/${user.id}`, fetcher)
 
 
     let main 

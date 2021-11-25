@@ -1,18 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
 import Button from "../../ui/button";
-import { PlayFilled, Spinner, Pause, Plus, Edit } from "../../icons";
+import { PlayFilled, Spinner, Pause, Plus, Edit, HeartFilledIcon, HeartIcon } from "../../icons";
 import IconButton from "../../ui/icon_button";
 import { useRouter } from "next/router";
 import ControllerOverlay from "../../shared-components/controller_overlay"
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize";
 import { usePodcastStore } from "../../stores/usePodcastStore";
 import axios from "axios"
-import useSWRImmutable from 'swr/immutable'
+import useSWR from 'swr'
 import {usePlayerStore} from "./../../stores/usePlayerStore"
 import {WSContext} from "./../ws/ws_provider"
+
 import {openUploadModal, useModalStore} from "../../shared-components/modal/upload_modal"
 const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 
+
+const getPodcastUrl=(name="")=>{
+  return name.replace(/\s+/g, "-").toLowerCase()
+}
 
 const CategoryPill = ({ category }) => {
   return (
@@ -106,28 +111,56 @@ const Episode = ({ episode,className, ...props }) => {
 
 const PodcastController = ({...props }) => {
     const screenSize  = useDetectScreenSize()
-    const {setType} = useModalStore()
+    const {setType,setCurrentState} = useModalStore()
     const router = useRouter()
-    const {clear, podcast, episodes} = usePodcastStore()
+    const {clear, podcast, episodes, addFav} = usePodcastStore()
+    const [isFav, setIsFav] = useState(podcast?.is_favorite || undefined )
     const {name} = router.query
     const {user} = useContext(WSContext)
-    const {data, error} = useSWRImmutable(`http://localhost:4001/podcast/episodes/${podcast.id}`, fetcher)
-    const [episodesList, setEpisodesList] = useState(episodes || data)
-   
-  useEffect(()=>{
-      if(data && episodes.length == 0){
-        setEpisodesList(data)
+    const {data, error} = useSWR(`http://localhost:4001/podcast/episodes/${podcast.id}`, fetcher)
+    const [episodesList, setEpisodesList] = useState(data)
+    
+    useEffect(()=>{
+      if(podcast){
+        router.push(`/podcast/${getPodcastUrl(podcast.name)}`)
       }
-      if(data && episodes.length > 0){
-        setEpisodesList(episodes)
-      }
-  },[data, episodes])
+    },[podcast])
+
+
+    
   useEffect(()=>{
-    if(episodes){
-      setEpisodesList(episodes)
-      
+    const checkFav = async()=>{
+
+      let favData = {
+        podcast_id: podcast.id,
+        creator_id: user.id
+      }
+      await axios.post("http://localhost:4001/podcast/check-favorite",{data: favData})
+        .then((e)=>{
+          if(e.data){
+         
+            addFav(e.data.is_favorite)
+            setIsFav(e.data.is_favorite)
+          }
+        })
     }
-  },[episodes])
+    checkFav()
+  },[podcast.id, user.id])
+
+    const handleFav = async()=>{
+      let favData = {
+        id: podcast.id,
+        act: !isFav
+      }
+      await axios.post("http://localhost:4001/podcast/favorite",{data: favData})
+        .then((e)=>{
+          if(e.data){
+            addFav(!isFav)
+            setIsFav(!isFav)
+          }
+        })
+
+    }
    
   return (
    <ControllerOverlay>
@@ -139,7 +172,13 @@ const PodcastController = ({...props }) => {
           <span>
             <Edit/>
           </span>
-          <p className="pl-1.5">
+          <p 
+          onClick={()=>{
+            setType("edit")
+            setCurrentState(1)
+            openUploadModal(true)
+          }}
+          className="pl-1.5">
           Edit podcast</p>
         </div>
 
@@ -165,7 +204,22 @@ const PodcastController = ({...props }) => {
         </div>
 
         <div style={{ width: screenSize === "mobile" ? "100%" : "calc(100% - 200px)" }} 
-        className={`pt-6 pl-4  flex flex-col ${screenSize === "mobile" ? 'items-center': ''}`}>
+        className={`pt-1 pl-4  flex flex-col ${screenSize === "mobile" ? 'items-center': ''}`}>
+        {isFav != undefined ? (
+         <div className="flex items-center mb-2">
+            <button
+            onClick={()=>{
+              setIsFav(!isFav)
+              handleFav()
+            }}
+            >
+            {isFav ? (<HeartFilledIcon />): (<HeartIcon/>)}
+            </button>
+           <p className="text-xs text-primary-300 pl-1.5">Add to favorites</p>
+         </div>
+
+
+        ) : null}
           <h4 className="text-xl text-semibold capitalize">{name.replace("-", " ")}</h4>
           <p className={`${screenSize === 'mobile' ? 'w-11/12 pt-1.5 text-center' : 'w-9/12 pt-3'} text-base text-primary-300`}>
            {podcast.description}
@@ -216,9 +270,9 @@ const PodcastController = ({...props }) => {
            ) : null}
           </div>
           <div className="w-full mt-7 relative">
-          {episodesList && episodesList.episodes ?  (
+          {data && data.episodes ?  (
             <div>
-            {episodesList.episodes.map((e)=>{
+            {data.episodes.map((e)=>{
               return (
                 <Episode
                 episode={e}

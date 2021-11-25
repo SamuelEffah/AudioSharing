@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Clock, PlayFilled } from "../icons";
+import React, { useContext, useEffect, useState } from "react";
+import { Clock, PlayFilled, HeartFilledIcon, HeartIcon } from "../icons";
 import Link from "next/link";
 import { Play, Pause } from "../icons";
 import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize";
 import { usePlayerStore } from "../stores/usePlayerStore";
 import Button from "./button";
 import router from "next/router";
-
+import axios from "axios";
 import moment from "moment";
 import { usePodcastStore } from "../stores/usePodcastStore";
+import { WSContext } from "../modules/ws/ws_provider";
 const playerStatus = (isPlaying, isPause)=>{
 
   if(isPlaying && !isPause){
@@ -92,12 +93,34 @@ const MobilePreviewCard = ({podcast,marginX = 0,...props}) => {
   );
 };
 
-const PreviewCard = ({podcast,className, isOwner=false,  marginX = 0, ...props }) => {
+const PreviewCard = ({podcast,className, isfavorite=false, isOwner=false,  marginX = 0, ...props }) => {
   const isPlaying = usePlayerStore((s)=> s.episode.id == podcast.id && s.isPlaying)
   const isPause = usePlayerStore((s)=> s.episode.id == podcast.id && s.isPause)
   const {play, pause, playCurrent,episode, ref} = usePlayerStore()
-  const {addPodcast} = usePodcastStore()
+  const [isFav, setIsFav] = useState(podcast?.is_favorite)
+  const {addPodcast,addFav} = usePodcastStore()
+  const {user} = useContext(WSContext)
   
+
+  useEffect(()=>{
+    const checkFav = async()=>{
+
+      let favData = {
+        podcast_id: podcast.id,
+        creator_id: user.id
+      }
+      await axios.post("http://localhost:4001/podcast/check-favorite",{data: favData})
+        .then((e)=>{
+          if(e.data){
+     
+            addFav(e.data.is_favorite)
+            setIsFav(e.data.is_favorite)
+            
+          }
+        })
+    }
+    checkFav()
+  },[podcast.id, user.id,])
   
   const screenSize = useDetectScreenSize();
   
@@ -113,6 +136,21 @@ const PreviewCard = ({podcast,className, isOwner=false,  marginX = 0, ...props }
     if(!isPlaying && !isPause){
       play(podcast)
     }
+  }
+
+  const handleFav = async()=>{
+    let favData = {
+      id: podcast.id,
+      act: !isFav
+    }
+    await axios.post("http://localhost:4001/podcast/favorite",{data: favData})
+      .then((e)=>{
+        if(e.data){
+          addFav(!isFav)
+          setIsFav(!isFav)
+        }
+      })
+
   }
   
   return (
@@ -193,8 +231,8 @@ const PreviewCard = ({podcast,className, isOwner=false,  marginX = 0, ...props }
 
             ) : (
 
-            <div>
-              <div className="mt-3.5 flex items-center">
+            <div className="w-full relative">
+              <div className="mt-3.5 flex justify-between items-center">
       
                 <PreviewPlayBtn 
            
@@ -202,6 +240,14 @@ const PreviewCard = ({podcast,className, isOwner=false,  marginX = 0, ...props }
                 isPause={isPause}
                 onClick={handleMedia}
                   />
+              {isfavorite ? (
+              <button
+              onClick={handleFav}
+              className="mr-5"
+              >
+                  {isFav ? (<HeartFilledIcon />): (<HeartIcon/>)}
+              </button>
+              ) : null}
               </div>
             </div>
 

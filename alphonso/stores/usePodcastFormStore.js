@@ -13,14 +13,15 @@ export const usePodcastFormStore = create(
     },
     (set) => ({
         updatePodcast: (info)=> set((s)=>({
-            podcastDetails: {...s.podcastDetails, ...info}
+            podcastDetails: {...s.podcastDetails, ...info},
+        
         })), 
         addOrRemoveTag:(tag,isAdd)=>set((s)=>({
           
           tags: isAdd? [...s.tags, tag] : s.tags.filter(t=> t != tag),
           podcastDetails: {...s.podcastDetails, tags:isAdd? [...s.tags, tag] : s.tags.filter(t=> t != tag)}
         })),
-        clear:() => set({
+        clear:() => set({     
           podcastDetails: {},
           tags: [],
           isComplete: false

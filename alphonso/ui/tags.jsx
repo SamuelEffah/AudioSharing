@@ -2,7 +2,7 @@ import React, {useCallback,useState ,useEffect} from "react"
 import { Plus } from "../icons"
 import { usePodcastFormStore } from "../stores/usePodcastFormStore"
 
-const tagsList = [
+const tagsLabels = [
     {
         label:"History"
     },
@@ -24,9 +24,9 @@ const tagsList = [
     }
 ]
 
-const TagPill = ({label,cb,indx,...props}) =>{
+const TagPill = ({label,isSelected,cb,indx,...props}) =>{
     const {addOrRemoveTag} = usePodcastFormStore()
-    const [selected, setSelected] = useState(false)
+    const [selected, setSelected] = useState(isSelected || false)
 
     return (
         <div 
@@ -55,21 +55,22 @@ const TagPill = ({label,cb,indx,...props}) =>{
 
 }
 
-const Tags = ({...props})=>{
-    const [tagList, setTagsList] = useState([])
+const Tags = ({tagsList,isEdit=false ,...props})=>{
+    const [tagList, setTagsList] = useState(tagsLabels)
     const {tags} = usePodcastFormStore()
-   
+ 
+    
  
     return(
         <div className="w-full relative">
         
         <p className="text-primary-600 mb-3 ">Tags</p>
         <div className="w-full flex flex-wrap items-center">
-           {tagsList.map((v,i)=>{
+           {tagList.map((v,i)=>{
             
                return <TagPill  
                key={i} 
-
+                isSelected={isEdit && tagsList && tagsList.includes(v.label) ? true : false}
                indx={i}
                 label={v.label}/>
            })}
