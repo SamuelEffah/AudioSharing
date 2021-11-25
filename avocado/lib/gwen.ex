@@ -8,6 +8,7 @@ defmodule Gwen do
   alias Gwen.Routes.Auth.Google
   use Plug.Router
 
+  plug(Gwen.Cors)
   plug(:match)
   plug(:dispatch)
 

@@ -17,9 +17,10 @@ defmodule Hass.Schema.Podcast do
     field(:rating, :integer, default: 0)
     field(:num_of_listeners, :integer, default: 0)
     field(:poster_url, :string)
+
     field(:tags, {:array, :string})
 
-
+    field(:is_favorite, :boolean, virtual: true, default: false)
     field(:creator_name, :string, virtual: true)
     field(:num_of_eps, :integer, virtual: true)
     field(:episodes, {:array, :string}, virtual: true)
@@ -38,6 +39,7 @@ defmodule Hass.Schema.Podcast do
     :is_publish,
     :poster_url,
     :creator_id,
+    :is_favorite,
     :tags
   ])
   |> validate_required([
@@ -53,7 +55,7 @@ end
 
 
 defimpl Jason.Encoder, for: __MODULE__  do
-  @fields ~w(id name description subtitle creator_name poster_url episodes tags creator_id num_of_eps inserted_at)a
+  @fields ~w(id name description subtitle is_favorite creator_name poster_url episodes tags creator_id num_of_eps inserted_at)a
 
   defp transform(fields), do: fields
 

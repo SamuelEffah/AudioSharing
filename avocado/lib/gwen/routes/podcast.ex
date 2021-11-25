@@ -2,6 +2,7 @@ defmodule Gwen.Routes.Podcast do
   use Plug.Router
   alias Hass.Schema.Podcast
   alias Hass.Query.Podcast
+  alias Hass.Query.Favorite
   alias Hass.Repo
   require Logger
   plug(Plug.Parsers,
@@ -19,11 +20,11 @@ defmodule Gwen.Routes.Podcast do
 
   post "/create" do
     data = conn.params["data"]
-    # Enum.each(data, fn d ->
-    #   IO.inspect(d)
-    #   {:created, podcast} = Podcast.create_podcast(d)
-    # end
-    # )
+    Enum.each(data, fn d ->
+      IO.inspect(d)
+      {:created, podcast} = Podcast.create_podcast(d)
+    end
+    )
 
     {:created, podcast} = Podcast.create_podcast(data)
     conn
@@ -51,10 +52,42 @@ defmodule Gwen.Routes.Podcast do
 
   post "/edit" do
     data = conn.params["data"]
-   update_podcast = Podcast.update_podcast(data)
+
+    update_podcast = Podcast.update_podcast(data)
+
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Jason.encode!(%{updated: update_podcast}))
+  end
+
+  get "/favorite/:id" do
+    podcasts = Podcast.get_podcast_by_favorite(id)
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{podcasts: podcasts}))
+  end
+  post "/favorite" do
+    data = conn.params["data"]
+    if data["act"] == "add" do
+      update_podcast = Favorite.add_favorite(data)
+
+    else
+      update_podcast = Favorite.remove_favorite(data)
+
+    end
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{status: true}))
+  end
+
+  post "/check-favorite" do
+    data = conn.params["data"]
+    fav_check = Favorite.check_favorite(data)
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(fav_check))
   end
 
   get "/filter/:query" do

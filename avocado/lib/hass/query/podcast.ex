@@ -3,6 +3,7 @@ defmodule Hass.Query.Podcast do
   alias Hass.Repo
   alias Hass.Query.Episode
   alias Hass.Schema.Episode
+  alias Hass.Schema.Favorite
   alias Hass.Schema.User, as: UserSchema
   alias Hass.Query.User
 
@@ -61,6 +62,19 @@ defmodule Hass.Query.Podcast do
 
    Repo.all(query)
 
+  end
+
+
+  @spec get_podcast_by_favorite(any) :: any
+  def get_podcast_by_favorite(id) do
+    query =
+      from f in Favorite,
+      join: p in Podcast,
+      on: f.podcast_id == p.id,
+      where: f.creator_id == ^id,
+      select: %{p | is_favorite: true},
+      order_by: [desc: p.inserted_at]
+    Repo.all(query)
   end
 
 
@@ -147,7 +161,9 @@ defmodule Hass.Query.Podcast do
           name: data["name"],
           description: data["description"],
           subtitle: data["subtitle"],
-          poster_url: data["poster_url"]
+          poster_url: data["poster_url"],
+          tags: data["tags"]
+
         }
       )
 
@@ -177,4 +193,17 @@ defmodule Hass.Query.Podcast do
     )
     |> Repo.update_all([])
   end
+
+  # def set_favorite(podcast_id,action) do
+  #   from(
+  #     p in Podcast,
+  #     update: [
+  #       set: [
+  #         is_favorite: ^action
+  #       ]
+  #     ],
+  #     where: p.id == ^podcast_id
+  #   )
+  #   |> Repo.update_all([])
+  # end
 end
