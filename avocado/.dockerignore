@@ -1,0 +1,9 @@
+# something
+/_build/
+/deps/
+/doc/
+/cover/
+/.fetch
+*.ez
+avocado-*.tar
+erl_crash.dump

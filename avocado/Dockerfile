@@ -1,26 +1,30 @@
-FROM elixir:alpine
-ARG app_name=avocado
-ARG build_env=prod
-ENV MIX_ENV=${build_env} TERM=xterm
-WORKDIR /opt/app
-RUN apk update \
-    && apk --no-cache --update  \
-    && mix local.rebar --force \
-    && mix local.hex --force
+# Build the release
+# -----------------
+
+FROM elixir:1.9.0-alpine as build
+ENV MIX_ENV=prod
+
+WORKDIR /source
+RUN mix local.hex --force && mix local.rebar --force
+
+# Install and compile dependencies
+COPY mix.exs mix.lock ./
+COPY config config
+RUN mix do deps.get, deps.compile
+
+# Compile and build the app
 COPY . .
-RUN mix do deps.get, compile
+RUN mix do compile, release
 
-RUN mix release ${app_name} \
-    && mv _build/${build_env}/rel/${app_name} /opt/release \
-    && mv /opt/release/bin/${app_name} /opt/release/bin/start_server
 
-FROM alpine:latest
-ARG project_id=podcastcapstone
-RUN apk update \
-    && apk --no-cache --update add bash ca-certificates openssl-dev \
-    && mkdir -p /usr/local/bin 
-ENV PORT=8080 GCLOUD_PROJECT_ID=${project_id} REPLACE_OS_VARS=true
-EXPOSE ${PORT}
-WORKDIR /opt/app
-COPY --from=0 /opt/release .
-CMD exec /opt/app/bin/start_server start
+# Run the app
+# -----------
+
+FROM elixir:1.9.0-alpine
+ENV MIX_ENV=prod
+EXPOSE 3000
+
+WORKDIR /app
+COPY --from=build /source/_build/${MIX_ENV}/rel/avocado .
+
+CMD ["bin/avocado", "start"]
