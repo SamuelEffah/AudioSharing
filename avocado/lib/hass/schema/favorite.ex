@@ -15,8 +15,8 @@ defmodule Hass.Schema.Favorite do
      timestamps()
   end
 
-  def changeset(episode, params \\ %{}) do
-  episode
+  def changeset(favorite, params \\ %{}) do
+  favorite
   |> cast(params, [
     :podcast_id,
     :id,

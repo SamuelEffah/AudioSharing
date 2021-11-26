@@ -3,6 +3,7 @@ defmodule Gwen.Routes.Podcast do
   alias Hass.Schema.Podcast
   alias Hass.Query.Podcast
   alias Hass.Query.Favorite
+  alias Hass.Query.Report
   alias Hass.Repo
   require Logger
   plug(Plug.Parsers,
@@ -88,6 +89,16 @@ defmodule Gwen.Routes.Podcast do
     conn
     |> put_resp_content_type("application/json")
     |> send_resp(200, Jason.encode!(fav_check))
+  end
+
+
+  post "/issue/report" do
+    data = conn.params["data"]
+    report = Report.issue_report(data)
+    Logger.info("report #{inspect(data)}")
+    conn
+    |> put_resp_content_type("application/json")
+    |> send_resp(200, Jason.encode!(%{report: "successful"}))
   end
 
   get "/filter/:query" do

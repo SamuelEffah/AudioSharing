@@ -1,4 +1,4 @@
-defmodule Hass.Schema.RecentPlay do
+defmodule Hass.Schema.Report do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -9,24 +9,27 @@ defmodule Hass.Schema.RecentPlay do
   @timestamps_opts [type: :utc_datetime_usec]
 
 
-  schema "recent_play" do
-     field(:time_stopped, :integer)
+  schema "reports" do
+    field(:msg, :string)
+    field(:is_resolve, :boolean, default: false)
      belongs_to(:podcast, Podcast, foreign_key: :podcast_id, type: :binary_id)
-     belongs_to(:users, User, foreign_key: :creator_id, type: :binary_id)
-    timestamps()
+     belongs_to(:users, User, foreign_key: :user_id, type: :binary_id)
+     timestamps()
   end
 
-  def changeset(recent, params \\ %{}) do
-    recent
+  def changeset(report, params \\ %{}) do
+  report
   |> cast(params, [
     :podcast_id,
-    :creator_id,
-    :time_stopped
+    :id,
+    :msg,
+    :is_resolve,
+    :user_id
   ])
   |> validate_required([
-    :creator_id,
-    :podcast_id,
-    :time_stopped
+    :user_id,
+    :msg,
+    :podcast_id
   ])
 
 
@@ -34,13 +37,13 @@ end
 
 
 defimpl Jason.Encoder, for: __MODULE__  do
-  @fields ~w(id time_stopped creator_id podcast_id)a
+  @fields ~w(id user_id msg is_resolve podcast_id)a
 
   defp transform(fields), do: fields
 
-  def encode(recent, opts) do
+  def encode(report, opts) do
 
-    recent
+    report
     |> Map.take(@fields)
     |> transform()
     |> Jason.Encoder.encode(opts)

@@ -1,9 +1,10 @@
 defmodule Gwen.Routes.Admin do
     use Plug.Router
-    alias Hass.Schema.User
-    alias Hass.Query.User
+    alias Hass.Query.Admin
     alias Hass.Repo
 
+
+  require Logger
     plug(Plug.Parsers,
       parsers: [:urlencoded, :json],
       json_decoder: Jason
@@ -13,42 +14,29 @@ defmodule Gwen.Routes.Admin do
     plug(:match)
     plug(:dispatch)
 
-    get "/users" do
-      allUsers = User.get_all_users()
+    get "/:admin_id/users" do
+      allUsers = Admin.get_users(admin_id)
       conn
       |> put_resp_content_type("application/json")
       |> send_resp(200, Jason.encode!(%{users: allUsers}))
     end
 
-    post "/create" do
+    post "/promote" do
       data = conn.params["data"]
-     {:created, episode} = Episode.create_episode(data)
+      Logger.info("fsfa #{inspect(data)}")
+      promote_user = Admin.promote_to_admin(data)
       conn
       |> put_resp_content_type("application/json")
-      |> send_resp(200, Jason.encode!(%{msg: episode}))
+      |> send_resp(200, Jason.encode!(promote_user))
     end
-
-
-    get "/:id" do
-      episode = Episode.get_episode_by_id(id)
-      conn
-      |> put_resp_content_type("application/json")
-      |> send_resp(200, Jason.encode!(%{episode: episode}))
-    end
-
-
-    post "/edit" do
+    post "/ban" do
       data = conn.params["data"]
-     {_, update_episode} = Episode.update_episode(data)
+      Logger.info("fsfa #{inspect(data)}")
+      ban_user = Admin.ban_user(data)
       conn
       |> put_resp_content_type("application/json")
-      |> send_resp(200, Jason.encode!(%{updated: update_episode}))
+      |> send_resp(200, Jason.encode!(ban_user))
     end
-
-
-
-
-
 
 
   end
