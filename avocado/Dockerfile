@@ -1,12 +1,21 @@
 # Build the release
 # -----------------
 
-FROM elixir:1.9.0-alpine as build
+FROM hexpm/elixir:1.11.3-erlang-23.2.7-alpine-3.13.2 AS build
 ENV MIX_ENV=prod
-
+ENV PORT 8080
+ENV HOST 0.0.0.0
 WORKDIR /source
-RUN mix local.hex --force && mix local.rebar --force
-
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache \
+    git \
+    build-base \
+    nodejs-current \
+    nodejs-npm \ 
+    python3 && \ 
+    mix local.rebar --force && \
+    mix local.hex --force
 # Install and compile dependencies
 COPY mix.exs mix.lock ./
 COPY config config
@@ -22,7 +31,7 @@ RUN mix do compile, release
 
 FROM elixir:1.9.0-alpine
 ENV MIX_ENV=prod
-EXPOSE 3000
+
 
 WORKDIR /app
 COPY --from=build /source/_build/${MIX_ENV}/rel/avocado .

@@ -1,27 +1,35 @@
 import logging
-from flask import Flask, Response, request
+from flask import Flask, Response, request, session
 from flask_restful import Resource
 import boto3
 from botocore.exceptions import ClientError
 import os
-import json
 
+import json
+from pydub import AudioSegment
 class Audio(Resource):
 
     def get(self):
-        return {
-            'hello': 'wor22ld',
-            'accces': ""
-        }
+        params = request.query_string.decode('utf-8')
+        params = params.split('=')
+        ob = params[1]
+     
+        temp_file = ob.split('.')[0] + ".wav"
+        if os.path.isfile(temp_file):
+            return Response(generate(temp_file), mimetype="audio/x-wav")
+        # ob = "bensound_ukulele_a42bb57a_962a_4d98_a4fc_5564ff162670.mp3"
+        delete_file()
+        file = download_audio(ob)
+        return Response(generate(file), mimetype="audio/x-wav")
+      
 
 
 
     def post(self):
         if request.files:
-        
             data = request.form.to_dict(flat=True)
             data = json.loads(data['data'])
-            print(data['user_id'])
+
             upload_type = data['type']
             user_id = data["user_id"].replace('-','_')
             
@@ -80,16 +88,54 @@ def s3_storage(file,object_name,folder="audio/"):
             Bucket=bucket,
             Key=folder+object_name
         )
-        t = "https://"+ bucket +".s3.ca-central-1.amazonaws.com/"+folder+ object_name
-        print(t)
-        return t 
+        if folder == "audio/":
+            t = object_name
+            return t
+        else:
+            t = "https://"+ bucket +".s3.ca-central-1.amazonaws.com/"+folder+ object_name
+            return t      
+      
     except ClientError as e:
         print(e)
         logging.error(e)
         return False 
     
-   
-        
+
+def download_audio(object_name):
+    file = "audio/" +object_name
+    bucket="podcastcapstone"
+    s3 = boto3.client('s3', aws_access_key_id=os.environ.get("AWS_ACCESS_KEY_ID"),
+     aws_secret_access_key=os.environ.get("AWS_SECRET_ACCESS_KEY"))
+    print(f'dpwnloading...')
+    s3.download_file(bucket,file, os.path.basename(file))
+    wav_file = AudioSegment.from_mp3(object_name)
+
+    new_wav_file = object_name.split(".")[0] + ".wav"
+    print(f'converting to wav...')
+    wav_file.export(new_wav_file, format='wav')
+    print(f'removing file...')
+    os.remove(object_name)
+    return new_wav_file
+ 
+
+
+def generate(file):
+
+    with open(file, 'rb') as fw:
+        data = fw.read(1024)
+        while data:
+            yield data 
+            data = fw.read(1024)
+
+
+    
+def delete_file():
+    filenames = os.listdir(os.curdir)
+    for filename in filenames:
+        if os.path.isfile(filename) and filename.endswith('.wav'):
+            os.remove(filename)
+            return 
+    return
 
      
 

@@ -1,31 +1,65 @@
 import Config
 
-config :logger, level: :info
-
 database_url =
   System.get_env("DATABASE_URL") ||
-  "postgres://postgres:kofimensah@localhost:5432/podcast"
-  # "postgres://sam:reginaKyei21@@localhost:5432/podcast"
+    raise("""
+    environment variable DATABASE_URL is missing.
+    For example: ecto://USER:PASS@HOST/DATABASE
+    """)
 
-config :avocado, Hass.Repo, url: database_url
-
-# TODO: remove system environment variables and make
-# dev deployment easier
+    config :avocado, Hass.Repo, url: database_url
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: "7b5815add92c64a075e5",
-  client_secret: "a16a4c8b87981806ee61b16405e85be8ae8a0ab"
+client_id:
+System.get_env("GITHUB_CLIENT_ID") ||
+  raise("""
+  environment variable GITHUB_CLIENT_ID is missing.
+  Create an oauth application on GitHub to get one
+  """),
+client_secret:
+System.get_env("GITHUB_CLIENT_SECRET") ||
+  raise("""
+  environment variable GITHUB_CLIENT_SECRET is missing.
+  Create an oauth application on GitHub to get one
+  """)
 
 config :avocado,
   secret_key_base:
-    "afion934hnifainiuheiankjsgn945njkabnjkngkjbnajkgiu4503bnfkag",
-  github_id: "47938002",
-  access_token_secret: "4ajnpOe4irknNjdrek9ir3mfFhe",
-  refresh_token_secret: "ok54J34PKekjiwnbpIioqnps5Oebn",
-  include_erts: true,
-  http: [port: {:system, "PORT"}]
+  System.get_env("SECRET_KEY_BASE") ||
+  raise("""
+  environment variable SECRET_KEY_BASE is missing.
+  """),
+  github_id:
+    System.get_env("GITHUB_ID") || raise("""
+    environment variable GITHUB ID is missing.
+    """),
+
+  access_token_secret:
+    System.get_env("ACCESS_TOKEN_SECRET") ||
+   raise("""
+    environment variable ACCESS_TOKEN_SECRET is missing.
+    type some random characters to create one
+    """),
+  refresh_token_secret:
+    System.get_env("REFRESH_TOKEN_SECRET") ||
+    raise("""
+    environment variable REFRESH_TOKEN_SECRET is missing.
+    type some random characters to create one
+    """)
+
+
 
 
 config :joken,
-  access_token_secret: "4ajnpOe4irknNjdrek9ir3mfFhe",
-  refresh_token_secret: "ok54J34PKekjiwnbpIioqnps5Oebn"
+  access_token_secret:
+  System.get_env("ACCESS_TOKEN_SECRET") ||
+    raise("""
+    environment variable ACCESS_TOKEN_SECRET is missing.
+type some random characters to create one
+"""),
+  refresh_token_secret:
+    System.get_env("REFRESH_TOKEN_SECRET") ||
+      raise("""
+  environment variable REFRESH_TOKEN_SECRET is missing.
+  type some random characters to create one
+  """)
