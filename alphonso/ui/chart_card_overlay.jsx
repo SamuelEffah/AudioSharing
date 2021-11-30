@@ -3,7 +3,7 @@ import React from "react"
 const cardSizes = {
     sm:{
         width: "300px",
-        height: "200px"
+        height: "max-content"
     },
     
     md:{

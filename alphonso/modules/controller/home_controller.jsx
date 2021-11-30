@@ -20,11 +20,11 @@ import { ExploreController } from "./explore"
 
     const screenSize = useDetectScreenSize()
     const {user} = useContext(WSContext)
-    const [currentIndx, setCurrentIndx] = useState(1)
+    const [currentIndx, setCurrentIndx] = useState(0)
   
     return (
           <ControllerOverlay>
-          {user && !user.is_creator ? (
+          {user && !user.isCreator ? (
           <Banner/>
           ) : null}
            <div className="w-full  relative">

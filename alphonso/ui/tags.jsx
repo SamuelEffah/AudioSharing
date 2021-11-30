@@ -4,23 +4,23 @@ import { usePodcastFormStore } from "../stores/usePodcastFormStore"
 
 const tagsLabels = [
     {
-        label:"History"
+        label:"history"
     },
     {
-        label:"Art & Entertainment"
+        label:"art & entertainment"
     },
     {
-        label:"Sports"
+        label:"sports"
     },
     {
-        label:"Comedy"
+        label:"comedy"
     },
     {
-        label:"News & Politics"
+        label:"news & politics"
     }
     ,
     {
-        label:"Business & Technology"
+        label:"business & technology"
     }
 ]
 

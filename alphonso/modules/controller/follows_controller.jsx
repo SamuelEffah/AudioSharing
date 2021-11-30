@@ -3,10 +3,8 @@ import Link from 'next/link'
 import {useRouter} from "next/router"
 import {Spinner} from "../../icons"
 import Avatar from "../../ui/avatar"
-import axios from "axios"
-import useSWRImmutable from 'swr/immutable'
+
 import { useProfileStore } from "../../stores/useProfileStore"
-const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 
 const controllerLabels = ["podcast", "followers", "following"]
 
@@ -38,15 +36,13 @@ const FollowItem = ({user, ...props})=>{
 
 
 
-export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
+export const FollowsController = ({id,username, followsList, size=0, indx =0 ,...props})=>{
     const router = useRouter()
     const {addProfile} = useProfileStore()
     const [isLoading, setIsLoading] = useState(true)
-    const {data: followingList, error: followingError} =  useSWRImmutable( `http://localhost:4001/users/${username}/following`, fetcher)
-    const {data: followersList, error: followerError} =  useSWRImmutable( `http://localhost:4001/users/${username}/followers`, fetcher)
 
     let main = null
-    if(!followersList && indx == 1 || !followingList && indx == 2) {
+    if(!followsList && indx == 1 || !followsList && indx == 2) {
         main = (
             <div className="w-full flex items-center justify-center">
                 <Spinner/>
@@ -54,8 +50,8 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
         )
     }
 
-    if(followersList && followersList.length == 0 && indx  == 1 ||
-        followingList && followingList.length == 0 && indx  == 2 
+    if(followsList && followsList.length == 0 && indx  == 1 ||
+        followsList && followsList.length == 0 && indx  == 2 
         ){
             
             main = (
@@ -68,13 +64,13 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
         )
     }
 
-    if(followersList && followersList.length > 0 &&  indx == 1){
+    if(followsList && followsList.length > 0 &&  indx == 1){
         
         main = (
                   <div className=" w-full">
 
 
-                {followersList.map((f)=>{
+                {followsList.map((f)=>{
                     return (
                         <FollowItem 
                         onClick={(e)=>{
@@ -90,12 +86,12 @@ export const FollowsController = ({id,username, size=0, indx =0 ,...props})=>{
         )
     }
 
-    if(followingList && followingList.length > 0 &&  indx == 2){
+    if(followsList && followsList.length > 0 &&  indx == 2){
         main = (
                   <div className=" w-full">
 
 
-                {followingList.map((f)=>{
+                {followsList.map((f)=>{
                     return (
                         <FollowItem 
                          onClick={(e)=>{

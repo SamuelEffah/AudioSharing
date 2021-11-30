@@ -61,31 +61,31 @@ const UploadModal = ({...props})=>{
     const {updatePodcast} = usePodcastFormStore()
     const {user} = useContext(WSContext)
     
-    if(file && status == null && type=="podcast" ){
-      let userData = {
-            "user_id": user.id,
-            "type": "audio"
-        }
-        updateStatus("Uploading file...")
-        let formData = new FormData()
-        formData.append('file', file)
-        formData.append('data', JSON.stringify(userData))
-        axios({
-            method: "POST",
-            url: "http://localhost:5000/api/v1/audio",
-            data: formData,
-            headers: {"Content-Type": "multipart/form-data"}
-        }).then((res)=>{
-            console.log(res.data)
-            if(res.data.status == "successful"){
-              updatePodcast({file_name: res.data.file_url})
-              updateStatus("Upload Completed")
-            }
-        }).catch((e)=>{
-            console.error(e)
-        })
+    // if(file && status == null && type=="podcast" ){
+    //   let userData = {
+    //         "user_id": user.id,
+    //         "type": "audio"
+    //     }
+    //     updateStatus("Uploading file...")
+    //     let formData = new FormData()
+    //     formData.append('file', file)
+    //     formData.append('data', JSON.stringify(userData))
+    //     axios({
+    //         method: "POST",
+    //         url: "http://localhost:5000/api/v1/audio",
+    //         data: formData,
+    //         headers: {"Content-Type": "multipart/form-data"}
+    //     }).then((res)=>{
+    //         console.log(res.data)
+    //         if(res.data.status == "successful"){
+    //           updatePodcast({file_name: res.data.file_url})
+    //           updateStatus("Upload Completed")
+    //         }
+    //     }).catch((e)=>{
+    //         console.error(e)
+    //     })
 
-    }
+    // }
     // useEffect(()=>{
     //   console.log("file from effect", file)
     // },[file])

@@ -12,7 +12,7 @@ import { InputField } from "../input_field";
 import axios from 'axios'
 import { usePodcastFormStore } from "../../stores/usePodcastFormStore";
 import { openUploadModal, useModalStore } from "./upload_modal";
-import { set } from "nprogress";
+
 
 
 const FormModal = ({ ...props }) => {
@@ -43,10 +43,10 @@ const FormModal = ({ ...props }) => {
   useEffect(()=>{
     if(type == "edit" && podcastDetails && isEditPodcast){
      const sendUpdate = async()=>{
-       await axios.post("http://localhost:4001/podcast/edit",{data:podcastDetails})
+       await axios.post(process.env.NEXT_PUBLIC_API_URL+"/api/v1/podcast/edit",{data:podcastDetails})
        .then((e)=>{
-         if(e.data && e.data.updated){
-           addPodcast(e.data.updated)
+         if(e.data && e.data.podcast){
+           addPodcast(e.data.podcast)
            setCurrentState(0)
            openUploadModal(false)
          }
@@ -82,7 +82,9 @@ const FormModal = ({ ...props }) => {
       podcastInfo = {
         name,
         description,
-        subtitle
+        subtitle,
+        creatorId: user.id
+
       }
       // console.log("m ", m)
       if(type == "edit"){
@@ -132,7 +134,7 @@ const FormModal = ({ ...props }) => {
         }).then((res)=>{
             console.log(res.data)
             if(res.data.status == "successful"){
-              updatePodcast({poster_url: res.data.file_url, creator_id: user.id})
+              updatePodcast({posterUrl: res.data.file_url})
               
              
             }

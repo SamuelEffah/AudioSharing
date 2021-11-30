@@ -9,7 +9,7 @@ import Button from "../../ui/button";
 import { Modal } from "../../ui/modal";
 import Tags from "../../ui/tags";
 import { InputField } from "../input_field";
-
+import axios from "axios"
 
 const useEditProfileModalStore= create(
     combine(
@@ -39,44 +39,38 @@ const EditProfileModal  = ({ ...props }) => {
     const {isOpen,close} = useEditProfileModalStore()
     const [fullname, setFullname] = useState(user?.fullname)
     const [username, setUsername] = useState(user?.username)
-    const [profileUrl, setProfileUrl] = useState(user?.profile_url)
+    const [profileUrl, setProfileUrl] = useState(user?.profileUrl)
     const [isLoading, setIsLoading] = useState(false)
     const {updateProfile, addProfile} = useProfileStore()
+    const ENDPOINT = process.env.NEXT_PUBLIC_API_URL+"/api/v1/users/edit"
 
-    const onSaveEdit = ()=>{
+    const onSaveEdit = async()=>{
         if(user){
-
-            setIsLoading(true)
-            let ws = new WebSocket("ws://localhost:4001/socket")
-            ws.onopen=()=>{
-              // op: !profile.you_are_following ? "follow_user" : "unfollow_user",
-              let data = {
-                op:  "user_update",
-                access_token: accessToken,
-                refresh_token: refreshToken,
-                user_update:{
-                  user_id: user.id,
+             setIsLoading(true)
+             let data = {
+                id:  user.id,
+                accessToken,
+                refreshToken,
+                 data:{
                   fullname, 
                   username,
-                  profile_url: profileUrl
+                  profileUrl: profileUrl
                 }
               }
-          
-      
-              ws.send(JSON.stringify(data))
-      
-            }
-            ws.onclose=()=> console.log("connection close....")
-            ws.onmessage=(e)=>{
-              if(e.data){
-                // console.log(e.data)
-                setUser(JSON.parse(e.data))
-                updateProfile(JSON.parse(e.data))
-                setIsLoading(false)
-
+             await axios.post(ENDPOINT, {data: data})
+                .then((e)=>{
+                  if(e.data && e.data.user){
+                    console.log("update ", e.data.user)
+                    setUser(e.data.user)
+                    updateProfile(e.data.user)
+                    openEditProfileModal(false)
+                  }
                
-              }
-            }
+         
+                setIsLoading(false)
+                })
+        
+     
           }
     }
 

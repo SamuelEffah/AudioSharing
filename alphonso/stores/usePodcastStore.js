@@ -17,7 +17,7 @@ export const usePodcastStore = create(
           episodes: e
         }),
         addFav: (a)=>set((s)=>({
-          podcast:{...s.podcast, is_favorite: a}
+          podcast:{...s.podcast, isFavorite: a}
         })),
         clear: ()=>set({
             podcast:{}

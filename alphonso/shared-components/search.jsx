@@ -6,7 +6,7 @@ import {Search as SearchIcon } from "../icons"
 import Avatar from "../ui/avatar";
 import router from "next/router"
 import { useProfileStore } from "../stores/useProfileStore"
-
+import axios from "axios"
 
 
 const SearchItem = ({ item }) => {
@@ -22,7 +22,7 @@ const SearchItem = ({ item }) => {
         key={item?.id}
         className="mb-2.5 cursor-pointer w-full flex pl-2"
       >
-        <Avatar url={item?.profile_url} />
+        <Avatar url={item?.profileUrl} />
         <div className="cursor-default pl-2">
           <p style={{ fontSize: "13px" }} className="font-semibold">
             {item?.fullname}
@@ -84,15 +84,34 @@ const Search = ({...props})=>{
     
   useMemo(() => {
     if (query) {
-      let url = "http://localhost:4001/search/" + query;
-      const getResults = async () => {
-        await fetch(url)
-          .then((res) => res.json())
-          .then((data) =>
-           setResults(data.results));
+      
+      const getResults = async (q) => {
+        let url = process.env.NEXT_PUBLIC_API_URL+"/api/v1/users/search/" + q;
+        await axios.get(url)
+          .then((e) => {
+            if(e.data && e.data.users){
+              setResults(e.data.users)
+            }
+           
+          })
+         
+           
          
       };
-      getResults();
+     ;
+      if(query.startsWith("@")){
+        let tempQ = query
+        if(tempQ.length > 1){
+           getResults(query.split("@")[1])
+        }
+       
+     
+    }
+    else{
+      getResults(query)
+      
+    }
+    
     }
   }, [query]);
 

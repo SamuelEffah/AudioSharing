@@ -17,7 +17,7 @@ import { Spinner } from "../../icons";
 
 const FormModalCont = ({ ...props }) => {
 const {accessToken, refreshToken} = useTokenStore()
-const [isLoading, setIsLoading] = useState(true)
+const [isLoading, setIsLoading] = useState(false)
   const [episodeName, setEpisodeName]  = useState("")
   const [episodeDescription, setEpisodeDescription] = useState("")
     const[isPublish, setIsPublish] = useState(false) 
@@ -26,32 +26,35 @@ const [isLoading, setIsLoading] = useState(true)
   const {file, status, updateStatus} = useUploadAudioStore()
   const {type, setCurrentState} = useModalStore()
   const {updatePodcast, podcastDetails,clear} = usePodcastFormStore()
-  if (file && status == null && type == 'episode'){
-      let userData = {
-            "user_id": user.id,
-            "type": "audio"
-        }
-        updateStatus("Uploading file...")
-        let formData = new FormData()
-        formData.append('file', file)
-        formData.append('data', JSON.stringify(userData))
-        setIsLoading(true)
-        axios({
-            method: "POST",
-            url: "http://localhost:5000/api/v1/audio",
-            data: formData,
-            headers: {"Content-Type": "multipart/form-data"}
-        }).then((res)=>{
-            console.log(res.data)
-            if(res.data.status == "successful"){
-              updatePodcast({file_name: res.data.file_url})
-              updateStatus("Upload Completed")
+  const ENDPOINT =process.env.NEXT_PUBLIC_API_URL+ "/api/v1/podcast/creator/create"
+  const EPENDPOINT =process.env.NEXT_PUBLIC_API_URL+ "/api/v1/episodes/creator/create"
+  // DO NOT DELETE 
+  // if (file && status == null && type == 'episode'){
+  //     let userData = {
+  //           "user_id": user.id,
+  //           "type": "audio"
+  //       }
+  //       updateStatus("Uploading file...")
+  //       let formData = new FormData()
+  //       formData.append('file', file)
+  //       formData.append('data', JSON.stringify(userData))
+  //       setIsLoading(true)
+  //       axios({
+  //           method: "POST",
+  //           url: "http://localhost:5000/api/v1/audio",
+  //           data: formData,
+  //           headers: {"Content-Type": "multipart/form-data"}
+  //       }).then((res)=>{
+  //           console.log(res.data)
+  //           if(res.data.status == "successful"){
+  //             updatePodcast({file_name: res.data.file_url})
+  //             updateStatus("Upload Completed")
           
-            }
-        }).catch((e)=>{
-            console.error(e)
-        })
-  }
+  //           }
+  //       }).catch((e)=>{
+  //           console.error(e)
+  //       })
+  // }
 
   // }
 
@@ -66,70 +69,66 @@ const [isLoading, setIsLoading] = useState(true)
   },[podcastDetails,type])
 
 
-  // useEffect(()=>{
-  //   if(isPublish){
-  //     console.log(podcastDetails)
-  //   }
-  // },[isPublish])
+  
 
   useEffect(()=>{
     if(isPublish){
       
-
-     
-        let ws = new WebSocket("ws://localhost:4001/socket")
         let data = {}
         if(type == "podcast"){
           data = {
-              op: "create_podcast",
-              podcast: podcastDetails,
-              access_token: accessToken,
-              refresh_token: refreshToken,
+             
+              podcast: {...podcastDetails, 
+                fileName: "this is file", 
+                posterUrl: "this poster"},
+              accessToken: accessToken,
+              refreshToken: refreshToken,
           }
           
         }
         else{
           data = {
-            op: "upload_episode",
-            episode: podcastDetails,
-            access_token: accessToken,
-            refresh_token: refreshToken,
+            episode: {...podcastDetails, fileName: "this is file", posterUrl: "this poster"},
+            accessToken: accessToken,
+            refreshToken: refreshToken,
         }
         }
-        ws.onopen=()=>{
-          
-        ws.send(JSON.stringify(data))
-        }
-        ws.onmessage=(e)=>{
-      if(e.data){
-        if(type == "episode"){
+        const upload = async(data)=>{
+          let url = type == "podcast" ? ENDPOINT : EPENDPOINT
+          await axios.post(url, {data: data})
+          .then((e)=>{
+           
+          if(type == "episode"){
          
-          addEpisodes(JSON.parse(e.data))
+          addEpisodes(e.data.episodes)
           openUploadModal(false)
           clear()
           setCurrentState(0)
         } 
-       
-        if(user && user.is_creator && type == "podcast"){
-          
+         
+        if(user && user.isCreator && type == "podcast"){
          openUploadModal(false)
          clear()
          setCurrentState(0)
        }
-       else{
-         setCurrentState(3)
-       if(type == "podcast"){
-         setUser(JSON.parse(e.data))  
+      else{
+          setCurrentState(3)
+        if(type == "podcast"){
+          setUser(e.data.user)  
+        }
+        if(type == "episode"){
+          addEpisodes(e.data.episodes)
+        }
       }
-      if(type == "episode"){
-        addEpisodes(JSON.parse(e.data))
-      }
-         
-        
-       }
-      }
-    }
-    
+          // setIsLoading(false)
+          })
+        }
+
+      
+
+        upload(data)
+
+
     }
     return()=>{
         setIsPublish(false)

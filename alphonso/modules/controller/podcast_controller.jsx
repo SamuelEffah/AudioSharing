@@ -68,12 +68,23 @@ const Episode = ({ episode,className, ...props }) => {
         style={{ width: "60px", height: "60px" }}
         className="bg-primary-100 flex-shrink-0 rounded-xl"
       >
-        <img
-              className="w-full h-full bg-primary-100  rounded-l-xl"
-              style={{ objectFit: "cover" }}
-              src={podcast.poster_url}
-              alt="podcast poster"
-            />
+        {podcast && podcast.posterUrl ? (
+                  <img
+                  className="w-full h-full bg-primary-100  rounded-l-xl"
+                  style={{ objectFit: "cover" }}
+                  src={podcast.posterUrl}
+                  alt={podcast.name}
+                />
+
+          ) : (
+            <div
+            className="relative w-full h-full bg-primary-100  rounded-l-xl bg-primary-100"
+            >
+
+
+            </div>
+          )}
+     
 
       </div>
       <div 
@@ -117,7 +128,7 @@ const PodcastController = ({...props }) => {
     const [isFav, setIsFav] = useState(podcast?.is_favorite || undefined )
     const {name} = router.query
     const {user} = useContext(WSContext)
-    const {data, error} = useSWR(`http://localhost:4001/podcast/episodes/${podcast.id}`, fetcher)
+    const {data, error} = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/podcast/episodes/${podcast.id}`, fetcher)
     const [episodesList, setEpisodesList] = useState(data)
     
     useEffect(()=>{
@@ -127,25 +138,25 @@ const PodcastController = ({...props }) => {
     },[podcast])
 
 
-    
-  useEffect(()=>{
-    const checkFav = async()=>{
+    // DO NOT DELETE
+  // useEffect(()=>{
+  //   const checkFav = async()=>{
 
-      let favData = {
-        podcast_id: podcast.id,
-        creator_id: user.id
-      }
-      await axios.post("http://localhost:4001/podcast/check-favorite",{data: favData})
-        .then((e)=>{
-          if(e.data){
+  //     let favData = {
+  //       podcast_id: podcast.id,
+  //       creator_id: user.id
+  //     }
+  //     await axios.post("http://localhost:4001/podcast/check-favorite",{data: favData})
+  //       .then((e)=>{
+  //         if(e.data){
          
-            addFav(e.data.is_favorite)
-            setIsFav(e.data.is_favorite)
-          }
-        })
-    }
-    checkFav()
-  },[podcast.id, user.id])
+  //           addFav(e.data.is_favorite)
+  //           setIsFav(e.data.is_favorite)
+  //         }
+  //       })
+  //   }
+  //   checkFav()
+  // },[podcast.id, user.id])
 
     const handleFav = async()=>{
       let favData = {
@@ -165,8 +176,8 @@ const PodcastController = ({...props }) => {
   return (
    <ControllerOverlay>
       <div style={{ width: "96%" }} className="flex items-center">
-        <h3 className="font-medium text-2xl capitalize">{name.replace("-", " ")}</h3>
-       {user && user.id == podcast.creator_id ?(
+        <h3 className="font-medium text-2xl capitalize">{podcast.name}</h3>
+       {user && user.id == podcast.creatorId ?(
 
         <div className="border-b  text-primary-300 cursor-pointer flex items-center justify-center ml-10">
           <span>
@@ -194,12 +205,23 @@ const PodcastController = ({...props }) => {
           "mobile" ? "120px": "180px"), height: (screenSize === "mobile"? "120px" :"180px" )}}
           className=" bg-primary-100 rounded-xl"
         >
-             <img
-              className="w-full h-full bg-primary-100  rounded-l-xl"
-              style={{ objectFit: "cover" }}
-              src={podcast.poster_url}
-              alt="podcast poster"
-            />
+          {podcast && podcast.posterUrl ? (
+                  <img
+                  className="w-full h-full bg-primary-100  rounded-l-xl"
+                  style={{ objectFit: "cover" }}
+                  src={podcast.posterUrl}
+                  alt="podcast poster"
+                />
+
+          ) : (
+            <div
+            className="relative w-full h-full bg-primary-100  rounded-l-xl bg-primary-100"
+            >
+
+
+            </div>
+          )}
+          
             
         </div>
 
@@ -220,7 +242,7 @@ const PodcastController = ({...props }) => {
 
 
         ) : null}
-          <h4 className="text-xl text-semibold capitalize">{name.replace("-", " ")}</h4>
+          <h4 className="text-xl text-semibold capitalize">{podcast.name}</h4>
           <p className={`${screenSize === 'mobile' ? 'w-11/12 pt-1.5 text-center' : 'w-9/12 pt-3'} text-base text-primary-300`}>
            {podcast.description}
           </p>
@@ -233,9 +255,9 @@ const PodcastController = ({...props }) => {
           })}
            
           </div>
-          <div>
+          {/* <div>
             <p style={{fontSize:'12px'}} className="mt-4 text-primary-300">{podcast?.creator_name}</p>
-          </div>
+          </div> */}
         </div>
       </div>
       <div style={{ width: "96%" }} className=" relative mt-10">
@@ -247,7 +269,7 @@ const PodcastController = ({...props }) => {
           <div className="w-full flex items-center">
             <p className="text-xl text-semibold">All Episodes</p>
            
-           {user && user.id == podcast.creator_id ? (
+           {user && user.id == podcast.creatorId ? (
 
             <button
             onClick={()=> {

@@ -78,8 +78,8 @@ const MobilePreviewCard = ({podcast,marginX = 0,...props}) => {
         <img
           className="w-full h-full  rounded-xl"
           style={{ objectFit: "cover" }}
-          src={podcast.poster_url}
-          alt="podcast poster"
+          src={podcast.posterUrl}
+          alt={podcast.name}
         />
       </div>
       <div
@@ -97,7 +97,7 @@ const PreviewCard = ({podcast,className, isfavorite=false, isOwner=false,  margi
   const isPlaying = usePlayerStore((s)=> s.episode.id == podcast.id && s.isPlaying)
   const isPause = usePlayerStore((s)=> s.episode.id == podcast.id && s.isPause)
   const {play, pause, playCurrent,episode, ref} = usePlayerStore()
-  const [isFav, setIsFav] = useState(podcast?.is_favorite)
+  const [isFav, setIsFav] = useState(podcast?.iFavorite)
   const {addPodcast,addFav} = usePodcastStore()
   const {user} = useContext(WSContext)
   
@@ -106,15 +106,15 @@ const PreviewCard = ({podcast,className, isfavorite=false, isOwner=false,  margi
     const checkFav = async()=>{
 
       let favData = {
-        podcast_id: podcast.id,
-        creator_id: user.id
+        podcastId: podcast.id,
+        creatorId: user.id
       }
-      await axios.post("http://localhost:4001/podcast/check-favorite",{data: favData})
+      await axios.post(process.env.NEXT_PUBLIC_API_URL+"/api/v1/podcast/check-favorite",{data: favData})
         .then((e)=>{
           if(e.data){
      
-            addFav(e.data.is_favorite)
-            setIsFav(e.data.is_favorite)
+            addFav(e.data.isFavorite)
+            setIsFav(e.data.isFavorite)
             
           }
         })
@@ -140,10 +140,11 @@ const PreviewCard = ({podcast,className, isfavorite=false, isOwner=false,  margi
 
   const handleFav = async()=>{
     let favData = {
-      id: podcast.id,
-      act: !isFav
+      podcastId: podcast.id,
+      creatorId: user.id,
+      action: isFav ? "remove" : "add"
     }
-    await axios.post("http://localhost:4001/podcast/favorite",{data: favData})
+    await axios.post(process.env.NEXT_PUBLIC_API_URL+"/api/v1/podcast/user/favorite",{data: favData})
       .then((e)=>{
         if(e.data){
           addFav(!isFav)
@@ -167,10 +168,10 @@ const PreviewCard = ({podcast,className, isfavorite=false, isOwner=false,  margi
         >
           <div style={{ width: "150px" }}>
             <img
-              className="w-full h-48 bg-primary-100  rounded-l-xl"
+              className="w-full h-48 bg-primary-100 border-none  rounded-l-xl"
               style={{ objectFit: "cover" }}
-              src={podcast.poster_url}
-              alt="podcast poster"
+              src={podcast.posterUrl}
+              alt={podcast.name}
             />
           </div>
           <div

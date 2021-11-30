@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import Button from "./button";
 import Avatar from "./avatar";
-import { openUploadModal, useModalStore } from "../shared-components/modal/upload_modal";
+import { openUploadModal } from "../shared-components/modal/upload_modal";
 import { useDetectScreenSize } from "../shared-hooks/useDetectScreenSize";
 import Navigations from "../data/navigations"
 import { WSContext } from "../modules/ws/ws_provider";
@@ -56,7 +56,6 @@ export const NavItem = ({ isIconBtn = false, to, label, icon, ...props }) => {
 const DefaultSideBar = ({user,...props}) => {
   const router = useRouter();
   const {addProfile} = useProfileStore()
-  const {setType} = useModalStore()
   return (
     <div
       className="z-50 bg-primary-100 text-primary-700 fixed h-full"
@@ -88,7 +87,7 @@ const DefaultSideBar = ({user,...props}) => {
                  key = {"admin_panel"}
                  label="Admin Panel"
                  icon={<Admin width={21} height={21} />}
-                 to="/admin"
+                 to={`/admin/${user.id}`}
                />
 
           ) : null}
@@ -98,10 +97,8 @@ const DefaultSideBar = ({user,...props}) => {
         </div>
 
         <div className="flex justify-center w-full mt-20">
-          <Button onClick={() => {
-            setType("podcast")
-            openUploadModal(true)}} 
-          label= {user && user.is_creator ? "Upload a Podcast" : "Become a Creator"} />
+          <Button onClick={() => openUploadModal(true)} 
+          label= {user && user.isCreator ? "Upload a Podcast" : "Become a Creator"} />
         </div>
         <div
            onClick={(e)=>{
@@ -112,7 +109,7 @@ const DefaultSideBar = ({user,...props}) => {
          className="absolute bottom-16 cursor-pointer flex items-center w-10/12">
         
         
-          <Avatar url={user?.profile_url}/>
+          <Avatar url={user?.profileUrl}/>
           <div>
           <p className="ml-2.5 text-md">{user?.fullname}</p>
           
@@ -131,7 +128,6 @@ const DefaultSideBar = ({user,...props}) => {
 const TabletSideBar = ({user,...props}) => {
   const router = useRouter();
   const {addProfile} = useProfileStore()
-  const {setType} = useModalStore()
   return (
     <div bg-primary-100 
       className="z-50text-primary-700 fixed h-full"
@@ -166,13 +162,13 @@ const TabletSideBar = ({user,...props}) => {
 
           ) 
           
-          {user && user.is_admin ? (
+          {user && user.isAdmin ? (
             <NavItem
                 isIconBtn={true}
                  key = {"admin_panel"}
                  label="Admin Panel"
                  icon={<Admin width={21} height={21} />}
-                 to="/admin"
+                 to={`/admin/${user.id}`}
                />
 
           ) : null}
@@ -183,9 +179,7 @@ const TabletSideBar = ({user,...props}) => {
             className="
             flex items-center justify-center
             border-none w-16 h-16 rounded-xl bg-accent"
-            onClick={()=> {
-              setType("podcast")
-              openUploadModal(true)}}
+            onClick={()=> openUploadModal(true)}
             >
             <Upload width={34} height={34}/>
             </button>
@@ -198,7 +192,7 @@ const TabletSideBar = ({user,...props}) => {
           router.push(`/profile/${user?.username}`)
         }}
         
-           url={user?.profile_url}/>
+           url={user?.profileUrl}/>
         </div>
       </div>
     </div>
@@ -208,7 +202,7 @@ const TabletSideBar = ({user,...props}) => {
 const SideBarPanel = ({ ...props }) => {
   const screenSize = useDetectScreenSize();
   const {user} = useContext(WSContext)
-
+  console.log("user for sied ", user)
   let sideNav = null;
   if (screenSize === "big-screen") {
     sideNav = (

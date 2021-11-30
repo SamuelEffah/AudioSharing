@@ -93,3 +93,15 @@ html {
   background-repeat: no-repeat;
  
 }
+
+#table-users th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+}
+#table-users tr:nth-child(even){background-color: #f2f2f2;}
+#table-users tbody tr:hover {
+  padding:8px 0px;
+  background-color: #ddd;
+  cursor:pointer;
+}

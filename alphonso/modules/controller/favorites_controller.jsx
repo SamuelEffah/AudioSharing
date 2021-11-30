@@ -11,12 +11,12 @@ const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 const FavoritesController = ({header,...props }) => {
   const screenSize  = useDetectScreenSize()
   const {user} = useContext(WSContext)
-  const {data, error} = useSWR(`http://localhost:4001/podcast/favorite/${user.id}`, fetcher)
+  // const {data, error} = useSWR(`http://localhost:4001/podcast/favorite/${user.id}`, fetcher)
 
 
   let main 
 
-if (data == undefined){
+if (!user){
 
   main = (
     <div className="w-full flex items-center justify-center">
@@ -25,7 +25,7 @@ if (data == undefined){
   )
 }
 
-if (data && data.podcasts.length == 0 ){
+if (user && user.favorites.length == 0 ){
   console.log("runnning empty data")
   main = (
     <div className="w-full flex  justify-center">
@@ -37,11 +37,11 @@ if (data && data.podcasts.length == 0 ){
         </div>
   )
 }
-if(data && data.podcasts.length > 0 ){
+if(user && user.favorites.length > 0 ){
 
   main = (
     <div className="w-full flex flex-wrap">
-      {data && data.podcasts.map((p)=>{
+      {user && user.favorites.map((p)=>{
         return (  <PreviewCard isfavorite={true} podcast={p} key={p.id}/>)
       })}
       </div>

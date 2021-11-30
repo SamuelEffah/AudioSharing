@@ -25,11 +25,6 @@ const DesktopLayout = ({ children, className, ...props }) => {
         <SideBarPanel />
         {children}
 
-        <RightPanel>
-          <Search/>
-          <FollowersActivity />
-          <Player />
-        </RightPanel>
       </>
     );
   }

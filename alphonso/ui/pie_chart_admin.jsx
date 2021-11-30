@@ -1,7 +1,7 @@
 import React from "react"
 import ChartCardOverlay from "./chart_card_overlay"
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer } from 'recharts';
-import Categories from "../data/categories";
+// import Categories from "../data/categories";
 
 
 const PieLegendItem = ({category,...props})=>{
@@ -17,31 +17,31 @@ const PieLegendItem = ({category,...props})=>{
     )
 }
 
-const PieChartAdmin = ({size,...props})=>{
+const PieChartAdmin = ({size,categories,...props})=>{
 
 
     return (
         <ChartCardOverlay 
         title="Podcast Categories"
         size={size}>
-<PieChart width={360} height={220} >
+<PieChart width={360} height={170} >
         <Pie
-          data={Categories}
-          cx={210}
-          cy={110}
-          innerRadius={80}
-          outerRadius={100}
+          data={categories}
+          cx={140}
+          cy={80}
+          innerRadius={70}
+          outerRadius={80}
           stroke="#18191C"
           paddingAngle={5}
           dataKey="size"
         >
-          {Categories.map((entry, index) => (
+          {categories?.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color}/>
           ))}
         </Pie>
     </PieChart>
-        <div className=" mt-2.5 px-2">
-        {Categories.map((entry, index) => (
+        <div className="">
+        {categories?.map((entry, index) => (
               <PieLegendItem key={`pie-legend-${index}`} 
               category={entry}
                />

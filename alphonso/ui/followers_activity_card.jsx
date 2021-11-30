@@ -36,9 +36,10 @@ const FollowerItem = ({ user }) => {
 
 const FollowersActivity = ({ className, ...props }) => {
   const { user } = useContext(WSContext);
-  const { data, error } = useSWRImmutable(
-    `http://localhost:4001/users/${user.username}/following/activity`,
-    fetcher);
+  const [data, setData] = useState([])
+  // const { data, error } = useSWRImmutable(
+  //   `http://localhost:4001/users/${user.username}/following/activity`,
+  //   fetcher);
 
   return (
     <div

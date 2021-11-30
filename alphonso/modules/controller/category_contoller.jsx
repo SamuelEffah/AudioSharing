@@ -18,8 +18,8 @@ const getFormatheader = (category)=>{
 
 const CategoryController = ({header,...props }) => {
     const screenSize  = useDetectScreenSize()
-    const {data, error} = useSWRImmutable( `http://localhost:4001/podcast/filter/${getFormatheader(header)}`, fetcher)
-    console.log(data)
+    const {data, error} = useSWRImmutable( `${process.env.NEXT_PUBLIC_API_URL}/api/v1/podcast/filter/${getFormatheader(header)}`, fetcher)
+    // console.log(data)
     let main 
 
 

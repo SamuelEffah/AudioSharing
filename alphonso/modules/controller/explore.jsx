@@ -14,25 +14,18 @@ export const ExploreController = ({ indx = 1, ...props }) => {
   const screenSize = useDetectScreenSize();
   const [isLoading, setIsLoading] = useState(true);
   const { data: topPodcastList, error: topPodcastError } = useSWRImmutable(
-    `http://localhost:4001/podcast/explore/top-podcasts`,
+    `http://localhost:4001/api/v1/podcast/explore/top-podcasts`,
     fetcher
   );
   const { data: newPodcastList, error: newPodcastError } = useSWRImmutable(
-    `http://localhost:4001/podcast/explore/just-in`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/v1/podcast/explore/just-in`,
     fetcher
   );
 
   let main = null;
 
-  // TODO: Implement the recent played
-  if (indx == 0) {
-    main = (
-      <div className="flex  h-48  w-full justify-center items-center">
-        <p className=" text-lg ">Nothing to show yet..</p>
-      </div>
-    );
-  }
-  if ((!newPodcastList && indx == 1) || (!topPodcastList && indx == 2)) {
+
+  if ((!newPodcastList && indx == 1) || (!topPodcastList && indx == 0)) {
     main = (
       <div className="w-full flex items-center justify-center">
         <Spinner />
@@ -42,7 +35,7 @@ export const ExploreController = ({ indx = 1, ...props }) => {
 
   if (
     (newPodcastList && newPodcastList.podcasts.length == 0 && indx == 1) ||
-    (topPodcastList && topPodcastList.podcasts.length == 0 && indx == 2)
+    (topPodcastList && topPodcastList.podcasts.length == 0 && indx == 0)
   ) {
     main = (
       <div className="flex  h-48 w-full justify-center items-center">
@@ -51,7 +44,7 @@ export const ExploreController = ({ indx = 1, ...props }) => {
     );
   }
 
-  if (newPodcastList && newPodcastList.podcasts.length > 0 && indx == 2) {
+  if (newPodcastList && newPodcastList.podcasts.length > 0 && indx == 1) {
     main = (
       <div className=" w-full">
         <HorizontalScroll
@@ -66,8 +59,7 @@ export const ExploreController = ({ indx = 1, ...props }) => {
     );
   }
 
-  if (topPodcastList && topPodcastList.podcasts.length > 0 && indx == 1) {
-      
+  if (topPodcastList && topPodcastList.podcasts.length > 0 && indx == 0) {
     main = (
       <div className=" w-full">
         <HorizontalScroll

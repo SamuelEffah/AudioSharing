@@ -12,7 +12,7 @@ const fetcher = (url)=> axios.get(url).then((res)=>res.data)
 const MyPodcastsController = ({header,...props }) => {
     const screenSize  = useDetectScreenSize()
     const {user} = useContext(WSContext)
-    const {data, error} = useSWR(`http://localhost:4001/podcast/${user.id}`, fetcher)
+    const {data, error} = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/podcast/${user.id}`, fetcher)
 
 
     let main 

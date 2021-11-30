@@ -1,9 +1,9 @@
 import React,{useEffect} from "react";
 import Link from "next/link";
-import router, {useRouter} from "next/router"
+import  {useRouter} from "next/router"
 import { Github, Google, Spinner } from "../../icons";
 import { useDetectScreenSize } from "../../shared-hooks/useDetectScreenSize";
-import { Connection } from "../ws/socket";
+
 import { useTokenStore } from "../../stores/useTokens";
 
 const ProviderAuth = ({ provider, isLoading = false, icon, url, ...props }) => {
@@ -58,18 +58,12 @@ const Login = () => {
   // }, [hasTokens])
 
   //set tokens 
-  useEffect(()=>{
-    if(a && r){
-      addTokens(a,r)
-      push("/discovery")
-    }
-  },[a,r,addTokens,push])
 
   useEffect(()=>{
     if(hasTokens){
-      push("/discovery")
+      router.push("/discovery")
     }
-  },[hasTokens, push])
+  },[hasTokens, router.push])
 
   return (
     <div
@@ -105,7 +99,7 @@ const Login = () => {
               icon={<Github width={40} height={40} />}
               onClick={(e) => {
                 e.preventDefault();
-                 window.location.href = "http://localhost:4001/auth/github";
+                 window.location.href = process.env.NEXT_PUBLIC_API_URL + "/auth/github";
               }}
             />
           
